@@ -1,0 +1,300 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.PortalPoliticosModel
+@{
+    ViewBag.Title = "Despesas";
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#ddlCargos").val('');
+        $("#ddlPoliticos").html('');
+        $("#ddlPoliticos").attr('disabled', 'disabled');
+        $("#ddlCidades").attr('disabled', 'disabled');
+        $('#fdsOpcoesPesquisaNome').coolfieldset();
+        $('#fdsOpcoesPesquisa').coolfieldset();
+        $("#hdnPoliticoSelecionado").val('');
+
+        $('#hdnPoliticoSelecionado').val(@Model.HdnIdPolitico); 
+
+        if ($('#hdnPoliticoSelecionado').val() != '' && $('#hdnPoliticoSelecionado').val() != null && $('#hdnPoliticoSelecionado').val() != '0') {
+            
+            pesquisarPoliticos();
+        }
+
+        $("#txtPolitico").autocomplete
+        ({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("ObterPoliticosMandatosAtivosByStringNome", "PortalPoliticos")', type: "GET", dataType: "json",
+                    data: { searchTerm: request.term, maxResults: 5 },
+                    minLength: 3,
+                    success: function (data) {
+
+                        if (data != '') {
+                            response($.map(data, function (item) {
+                                return { label: item.Nome,
+                                    value: item.Nome,
+                                    id: item.IdPolitico
+                                }
+                            }))
+                        }
+                        else {
+                            $('#hdnPoliticoSelecionado').val('');
+                        }
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#hdnPoliticoSelecionado').val(ui.item.id);
+            }
+        });
+
+    });
+
+    function filtrarCidadesCombo() {
+        if ($("#ddlEstados").val() != '') {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/PortalPoliticos/ObterCidadesByIdEstado")',
+                data:
+            {
+                idEstado: $("#ddlEstados").val()
+            },
+                dataType: "json",
+                success: function (data) {
+                    if (data != '') {
+
+                        $("#ddlCidades").html('');
+
+                        $("#ddlCidades").append("<option value='Selecione'>Selecione</option>");
+
+                        $.each(data, function (i, item) {
+                            $("#ddlCidades").append("<option value='" + data[i].IdCidade + "'>" + data[i].Nome + "</option>");
+                        })
+
+                        $("#ddlCidades").removeAttr('disabled');
+                    }
+                    else {
+                        $("#ddlCidades").html('');
+                        $("#ddlCidades").attr('disabled', 'disabled');
+                    }
+                }
+            });
+        }
+        else {
+            $("#ddlCidades").html('');
+            $("#ddlCidades").attr('disabled', 'disabled');
+        }
+    }
+
+    function pesquisarPoliticos() {
+
+        var isValid = false;
+        var message = '';
+        var idPolitico = $("#ddlPoliticos").val();
+
+        if ($('#hdnPoliticoSelecionado').val() != '' && $('#hdnPoliticoSelecionado').val() != null && $('#hdnPoliticoSelecionado').val() != '0') {
+            isValid = true;
+            idPolitico = $('#hdnPoliticoSelecionado').val();
+        }
+
+        if (isValid) {
+            $('#divValidation').html('');
+            $('#divValidation').hide('slow');
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/PortalDespesas/ObterPoliticosByFiltroUsuario")',
+                data:
+                {
+                    id: idPolitico
+                },
+                success: function (data) {
+                    if (data != '[object XMLDocument]') {
+                        $('#divDespesas').html(data);
+                        $('#divDespesas').show('slow');
+                        $('#divValidation').hide();
+                    }
+                    else {
+                        $('#divDespesas').html('');
+                        $('#divValidation').show('slow');
+                        message = 'Não foram encontrados políticos ativos com os parâmetros especificados.';
+                        $('#divValidation').html(message);
+                    }
+                }
+            });
+        }
+        else {
+            $('#divValidation').html("É necessário selecionar um político");
+            $('#divValidation').show('slow');
+        }
+    }
+
+    function filtrarPoliticosCombo() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Content("~/PortalPoliticos/ObterPoliticosAtivosByIdCargo")',
+            data: {
+                idCargo: $("#ddlCargos").val()
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data != '') {
+
+                    $("#ddlPoliticos").html('');
+
+                    $("#ddlPoliticos").append("<option value='Selecione'>Selecione</option>");
+
+                    $.each(data, function (i, item) {
+                        $("#ddlPoliticos").append("<option value='" + data[i].IdPolitico + "'>" + data[i].Nome + "</option>");
+                    })
+
+                    $("#ddlPoliticos").removeAttr('disabled');
+                }
+                else {
+                    $("#ddlPoliticos").html('');
+                    $("#ddlPoliticos").attr('disabled', 'disabled');
+                }
+            }
+        });
+    }
+
+    function obterPoliticosByCargoPartido() {
+
+        if ($("#ddlEstados").val() != '' && $("#ddlCidades").val() != '') {
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/PortalPoliticos/ObterPoliticosAtivosByCargoPartido")',
+                data: {
+                    idEstado: $("#ddlEstados").val(),
+                    idCidade: $("#ddlCidades").val(),
+                    idCargo: $("#ddlCargos").val(),
+                    idPartido: $("#ddlPartidos").val()
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data != '') {
+
+                        $("#ddlPoliticos").html('');
+
+                        $("#ddlPoliticos").append("<option value='Selecione'>Selecione</option>");
+
+                        $.each(data, function (i, item) {
+                            $("#ddlPoliticos").append("<option value='" + data[i].IdPolitico + "'>" + data[i].Nome + "</option>");
+                        })
+
+                        $("#ddlPoliticos").removeAttr('disabled');
+                    }
+                    else {
+                        $("#ddlPoliticos").html('');
+                        $("#ddlPoliticos").attr('disabled', 'disabled');
+                    }
+                }
+            });
+        }
+        else {
+            $("#ddlPoliticos").html('');
+            $("#ddlPoliticos").attr('disabled', 'disabled');
+        }
+    }
+
+    function txtPolitico_Click() {
+        $('#divDespesas').html('');
+        $('#hdnPoliticoSelecionado').val('');
+        $('#txtPolitico').val('');
+    }
+   
+</script>
+<h3 style="background: none repeat scroll 0 0 #FF9900;">
+    Despesas
+</h3>
+<p>
+    A Cota para o Exercício da Atividade Parlamentar (CEAP) foi criada em 2009 para dinamizar o controle dos gastos com a manutenção do 
+    mandato parlamentar (deputados e senadores) e para evitar excessos na utilização das verbas indenizatória. Desde então, os gastos 
+    com as verbas idenizatórias passaram a ser amplamente divulgados na internet. Antes disso, apenas sob força de liminar era possível 
+    acessar as notas fiscais de comprovação dos gastos.
+    <br /><br />
+    A CEAP pode ser utilizada para custear as seguintes modalidades de gasto: passagens aéreas, telefonia e serviços postais, manutenção 
+    de escritório de apoio à atividade parlamentar (gastos com locação de imóveis, equipamentos, material de escritório e informática, 
+    acesso a internet, TV a cabo e assinatura de publicações), hospedagem, locação ou fretamento de transporte,combustíveis e lubrificantes, 
+    serviços de segurança, contratação de consultorias e divulgação da atividade parlamentar. Os parlamentares têm até 90 dias, após o 
+    fornecimento do produto ou serviço, para apresentar as notas fiscais necessárias ao reembolso. O custo anual da cota é de <b>R$ 203.810.804,04.</b>
+</p>
+<br />
+
+<fieldset style="border: 1px solid gainsboro; padding: 10px 10px 10px 10px; width: 97%;">
+    <legend>&nbsp;<b>Consulte as despesas do político desejado:</b>&nbsp;</legend>
+    <form id="Form" action="#">
+    <div class="wrapper">
+    </div>
+    
+    <div id="divValidation" style="display: none; font-weight: bold; color: red; margin-bottom: 10px;"></div>
+
+    <fieldset style="width: 910px; margin:10px 0px 10px 0px; padding: 8px;" id="fdsOpcoesPesquisaNome" class="coolfieldset">
+        <legend>&nbsp;Pesquisa por nome:&nbsp;</legend>
+        <div>
+        * Nome:
+            @Html.TextBoxFor(x => x.NomePolitico, new { @id = "txtPolitico", @style = "width:63%; border:1px solid gainsboro; height:22px;", @onclick = "txtPolitico_Click()" })
+        </div>
+    </fieldset>
+
+    <fieldset style="width: 910px; padding: 8px;" id="fdsOpcoesPesquisa" class="coolfieldset">
+        <legend>&nbsp;Pesquisa por dados do político:&nbsp;</legend>
+        <div>
+            <table>
+                <tr>
+                    <td style="width: 52px;">
+                        Estado:
+                    </td>
+                    <td style="width: 52px;">
+                        @Html.DropDownListFor(x => x.IdEstado, new SelectList(Model.ListaEstados, "IdEstado", "Sigla"), "Selecione", new { @id = "ddlEstados", @style = "width:100px;", @onchange = "filtrarCidadesCombo()" })
+                    </td>
+                    <td>
+                        &nbsp;&nbsp;&nbsp;Cidade:
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(x => x.IdCidade, new SelectList(Model.ListaCidades, "IdCidade", "Nome"), new { @id = "ddlCidades", @style = "width:345px;", @disabled = "disabled" })
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <td>
+                        Cargo:
+                    </td>
+                    <td style="width: 350px;">
+                        @Html.DropDownListFor(x => x.IdCargo, new SelectList(Model.ListaCargos, "IdCargo", "Nome"), "Selecione", new { @id = "ddlCargos", @style = "width:390px;", @onchange = "obterPoliticosByCargoPartido();" })
+                    </td>
+                    <td>
+                        &nbsp;&nbsp;&nbsp;Partido:
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(x => x.IdPartido, new SelectList(Model.ListaPartidos, "IdPartido", "Sigla"), "Selecione", new { @id = "ddlPartidos", @style = "width:100px;", @onchange = "obterPoliticosByCargoPartido();" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Político:
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(x => x.IdPolitico, new SelectList(Model.ListaPoliticos, "IdPolitico", "Nome"), new { @id = "ddlPoliticos", @disabled = "disabled", @style = "width:390px;" })
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset>
+    </form>
+
+    <br />
+    <button type="button" onclick="pesquisarPoliticos();" style=" float:right; height: 30px;
+        cursor: pointer; width: 70px; margin-left: 5px; border-radius: 4px; background-color: #FF9900;
+        color: white;">
+        Pesquisar
+    </button>
+
+    <div id="divDespesas" style="margin: 10px;" />
+</fieldset>
+@Html.Hidden("hdnPoliticoSelecionado", Model.HdnIdPolitico)

@@ -1,0 +1,182 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.PortalPlenarioModel
+@{
+    ViewBag.Title = "_DetalhesPlenario";
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<script type="text/javascript" src="../../Content/paging.js"></script>
+<h3 style="background: none repeat scroll 0 0 #b530ba;">
+    @Model.NomeSessao</h3>
+<fieldset style="padding-left: 8px;" id="fdsPesquisaAvancada" class="coolfieldset">
+    <legend>&nbsp;Confira os detalhes desta Sessão:&nbsp;</legend>
+    <br />
+    <table>
+        <tr>
+            <td style="width: 100px; height: 25px;">
+                <b>Nome:</b>
+            </td>
+            <td>
+                @Model.NomeSessao
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100px; height: 25px;">
+                <b>Descrição:</b>
+            </td>
+            <td>
+                @Model.Descricao
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100px; height: 25px;">
+                <b>Situação:</b>
+            </td>
+            <td>
+                @switch (Model.IdSessao)
+                {
+                    case 1: <text>Convocada</text>break;
+                    case 2: <text>Em andamento</text>break;
+                    case 3: <text>Cancelada</text>break;
+                    case 4: <text>Encerrada</text>break;
+                }
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100px; height: 25px;">
+                <b>Orador:</b>
+            </td>
+            <td>
+                @Model.Orador.Nome
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100px; height: 25px;">
+                <b>Início / Fim:</b>
+            </td>
+            <td>
+                @Model.DataInicio - @Model.DateTermino
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100px; height: 25px;">
+                <b>Pauta:</b>
+            </td>
+            <td>
+                <a style="color: Black;" href="../../Content/pauta_s.pdf">Clique aqui para baixar a
+                    pauta desta Sessão</a>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <fieldset class="coolfieldset" style="padding-left: 8px; padding-bottom: 8px; width: 98%;">
+        <legend>Para esta Sessão, foram convocados todos os políticos com os mandatos ativos
+            nos seguintes Cargos:</legend>
+        @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Convocado item in Model.ListagemConvocados)
+        { 
+            <br />
+            @item.Cargo.Nome
+        }
+        <br />
+    </fieldset>
+    <br />
+    <fieldset class="coolfieldset" style="padding-left: 8px; padding-bottom: 8px; width: 98%;">
+        <legend>Durante esta Sessão, foram discutidas as seguintes Proposições:</legend>
+        @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.SessaoProposicao item in Model.ListagemProposicoes)
+        { 
+            <br />
+            <fieldset class="coolfieldset" style="padding-left: 8px; padding-bottom: 8px; width: 98%;">
+                <legend>Proposição Nro.: <font color="green">@item.Proposicao.Numero</font> &nbsp;</legend>
+                <br />
+                <table>
+                    <tr>
+                        <td style="width: 100px; height: 25px;">
+                            <b>Tipo:</b>
+                        </td>
+                        <td>
+                            @item.Proposicao.Tipo.Nome
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px; height: 25px;">
+                            <b>Situação:</b>
+                        </td>
+                        <td>
+                            @item.Proposicao.Situacao
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px; height: 25px;">
+                            <b>Ementa:</b>
+                        </td>
+                        <td>
+                            @item.Proposicao.Ementa
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px; height: 25px;">
+                            <b>Responsável:</b>
+                        </td>
+                        <td>
+                            @item.Proposicao.Politico.Nome - (@item.Proposicao.Politico.MandatoAtual.Cargo -
+                            @item.Proposicao.Politico.MandatoAtual.Partido)
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <b>Resultado das Votações:</b>
+                <table id="tbSessoes" style="margin-top: 20px; width: 99%; border: 1px solid gainsboro;">
+                    <thead>
+                        <tr style="color: white; background-color: #b530ba; font-size: 15px; font-weight: 500;
+                            padding-left: 20px; line-height: 28px; border: 1px solid gainsboro;">
+                            <td style="width: 20px; text-align: center;">
+                            </td>
+                            <td style="width: 400px; text-align: center;">
+                                Nome
+                            </td>
+                            <td style="width: 400px; text-align: center;">
+                                Partido (Mandato Atual)
+                            </td>
+                            <td style="width: 200px; text-align: center;">
+                                Voto
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody id="dinamicBody">
+                        @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Votacao v in Model.ListagemVotacoesPresencas)
+                        {
+                            <tr style="border: 1px solid gainsboro;">
+                                @if (v.IdVoto == 0)
+                                {
+                                    <td style="width: 20px; text-align: left; height: 20px; padding-left: 10px;">
+                                        <img src="../../Content/img/1385431450_cross.png" alt="Ausente" title="Ausente" />
+                                    </td>
+                                }
+                                else
+                                { 
+                                    <td style="width: 20px; text-align: left; height: 20px; padding-left: 10px;">
+                                        <img src="../../Content/img/1385431440_tick.png" alt="Presente" title="Presente" />
+                                    </td>
+                                }
+                                <td style="width: 400px; text-align: left; height: 20px; padding-left: 10px;">
+                                    @v.Politico.Nome
+                                </td>
+                                <td style="width: 400px; text-align: left;">
+                                    @v.Politico.MandatoAtual.Partido
+                                </td>
+                                <td style="width: 200px; text-align: center; height: 20px;">
+                                    @switch (v.IdVoto)
+                                    {
+                                        case 1: <text><b>Sim</b></text>break;
+                                        case 2: <text><b>Não</b></text>break;
+                                        case 3: <text><b>Art. 17</b></text>break;
+                                        default:<text>-</text>break;
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </fieldset>
+        }
+    </fieldset>
+    <br />
+</fieldset>

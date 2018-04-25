@@ -1,0 +1,191 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.PortalUsuariosModel
+@{
+    ViewBag.Title = "Registro";
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(function ($) {
+        $("#txtTelefone").mask("(99)9999-9999");
+        $("#txtCelular").mask("(99)9999-9999");
+        $("#txtCPF").mask("999.999.999-99");
+    });
+
+    function filtrarCidadesCombo() {
+
+        if ($("#ddlEstados").val() != '') {
+
+            $.ajax({
+                type: "GET",
+                url: "ObterCidadesByIdEstado",
+                data:
+            {
+                idEstado: $("#ddlEstados").val()
+            },
+                dataType: "json",
+                success: function (data) {
+                    if (data != '') {
+
+                        $("#ddlCidades").html('');
+
+                        $("#ddlCidades").append("<option value='Selecione...'>Selecione</option>");
+
+                        $.each(data, function (i, item) {
+                            $("#ddlCidades").append("<option value='" + data[i].IdCidade + "'>" + data[i].Nome + "</option>");
+                        })
+
+                        $("#ddlCidades").removeAttr('disabled');
+                    }
+                    else {
+                        $("#ddlCidades").html('');
+                        $("#ddlCidades").attr('disabled', 'disabled');
+                    }
+                }
+            });
+        }
+        else {
+            $("#ddlCidades").html('');
+            $("#ddlCidades").attr('disabled', 'disabled');
+        }
+    }
+
+    function fnSalvar() {
+        var isValid = true;
+        var message = '';
+
+        if ($('#txtNome').val() == '') {
+            isValid = false;
+            message = message + '<li> O preenchimento do nome é obrigatório. </li>';
+        }
+
+        if ($('#txtCPF').val() == '') {
+            isValid = false;
+            message = message + '<li> O preenchimento do CPF é obrigatório. </li>';
+        }
+
+        if ($('#ddlEstados').val() == '' || $("#ddlEstados").val() == 'Selecione') {
+            isValid = false;
+            message = message + '<li> O preenchimento do estado é obrigatório. </li>';
+        }
+
+        if ($('#ddlCidades').val() == '' || $("#ddlCidades").val() == 'Selecione') {
+            isValid = false;
+            message = message + '<li> O preenchimento da cidade é obrigatório. </li>';
+        }
+
+        if ($('#txtTelefone').val() == '') {
+            isValid = false;
+            message = message + '<li> O preenchimento do telefone é obrigatório. </li>';
+        }
+
+        if ($('#txtCelular').val() == '') {
+            isValid = false;
+            message = message + '<li> O preenchimento do celular é obrigatório. </li>';
+        }
+
+        if ($('#txtEmail').val() == '') {
+            isValid = false;
+            message = message + '<li> O preenchimento do email é obrigatório. </li>';
+        }
+
+        if ($('#txtLoginCadastro').val() == '') {
+            isValid = false;
+            message = message + '<li> O preenchimento do login é obrigatório. </li>';
+        }
+
+        if ($('#txtSenhaCadastro').val() == '') {
+            isValid = false;
+            message = message + '<li> O preenchimento da senha é obrigatório. </li>';
+        }
+
+        if ($('#txtSenhaConfirm').val() == '') {
+            isValid = false;
+            message = message + '<li> O preenchimento da confirmação da senha é obrigatório. </li>';
+        }
+
+        if($('#txtSenha').val() != '' && $('#txtSenha2').val() != '')
+        {
+            if ($('#txtSenha').val() != $('#txtSenha2').val()) {
+                isValid = false;
+                message = message + '<li> Confirmação de senha não é igual a senha informada. </li>'
+            }
+        }
+
+        if (isValid) {
+            alert('isValid!');
+            $('#Form').submit();
+        }
+        else {
+            $('#divValidation').html(message);
+            $('#divValidation').show('slow');
+        }
+    }
+
+</script>
+
+
+<h3 style="background: none repeat scroll 0 0 #3081c8;">Crie sua conta no Fiscalize...</h3>
+
+Aqui é possível conhecer os políticos que você elegeu, acompanhar e comparar políticos, receber notícias e muito mais.
+
+<br />
+<br />
+
+<fieldset style="border: 1px solid gainsboro; padding: 10px 10px 10px 10px; width: 97%;">
+    <legend>&nbsp;<b>Informe seus dados pessoais:</b>&nbsp;</legend>
+
+@using (Html.BeginForm("Create", "PortalUsuarios", FormMethod.Post, new { id = "Form" }))
+{   
+    @Html.Hidden("IdUsuario", Model.IdUsuario);
+
+    <div id="divValidation" style="display: none; font-weight: bold; color: red; margin-bottom: 10px; font-size: 12px; margin:0px 10px 0px 10px;">
+    </div>
+    
+    <div class="wrapper">
+                <br />
+                <table>
+                    <tr>
+                        <td><label>Nome:</label></td>
+                        <td colspan="3">@Html.TextBoxFor(x => x.Nome, new { @style = "width:500px;", @id = "txtNome", @class = "input", @maxlength = "100" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>CPF:</label></td>
+                        <td colspan="2">@Html.TextBoxFor(x => x.CPF, new { @style = "width:200px;", @id = "txtCPF", @class = "input", @maxlength = "14" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>Estado:</label></td>
+                        <td colspan="1">@Html.DropDownListFor(x => x.IdEstado, new SelectList(Model.ListaEstados, "IdEstado", "Sigla"), "Selecione", new { @id = "ddlEstados", @style = "width:100px;", @onchange = "filtrarCidadesCombo()" })</td>
+                        <td><label>Cidade:</label></td>
+                        <td colspan="1">@Html.DropDownListFor(x => x.IdCidade, new SelectList(Model.ListaCidades, "IdCidade", "Nome"), "Selecione", new { @id = "ddlCidades", @style = "width:230px;", @disabled = "true" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>Telefone:</label></td>
+                        <td colspan="1">@Html.TextBoxFor(x => x.Telefone, new { @style = "width:200px;", @id = "txtTelefone", @class = "input", @maxlength = "15" })</td>
+                        <td><label>Celular:</label></td>
+                        <td colspan="2">@Html.TextBoxFor(x => x.Celular, new { @style = "width:218px;", @id = "txtCelular", @class = "input", @maxlength = "15" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>E-mail:</label></td>
+                        <td colspan="3">@Html.TextBoxFor(x => x.Email, new { @style = "width:500px;", @id = "txtEmail", @class = "input", @maxlength = "100" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>Login:</label></td>
+                        <td colspan="2">@Html.TextBoxFor(x => x.UsuarioLogin, new { @style = "width:200px;", @id = "txtLoginCadastro", @class = "input", @maxlength = "10" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>Senha:</label></td>
+                        <td colspan="1">@Html.PasswordFor(x => x.Senha, new { @style = "width:200px;", @id = "txtSenhaCadastro", @class = "input", @maxlength = "15" })</td>
+                    </tr>
+                    <tr>
+                        <td><label>Repita sua senha:</label></td>
+                        <td colspan="1">@Html.PasswordFor(x => x.SenhaConfirm, new { @style = "width:200px;", @id = "txtSenhaConfirm", @class = "input", @maxlength = "15" })</td>
+                    </tr>
+
+                </table>  
+    </div>
+
+    <a href="#" class="button2" style="float: right;" onclick="fnSalvar()">Salvar</a>
+}
+
+</fieldset>

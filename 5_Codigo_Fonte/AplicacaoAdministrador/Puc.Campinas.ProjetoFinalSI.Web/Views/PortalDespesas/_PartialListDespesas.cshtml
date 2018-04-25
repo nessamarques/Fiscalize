@@ -1,0 +1,187 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Entidade.Politico
+<script type="text/javascript" src="../../Content/paging.js"></script>
+<style type="text/css">
+    .pg-ctrl
+    {
+        font: 16px verdana;
+        color: #FF9900;
+        text-decoration: none;
+        cursor: pointer;
+        padding: 4px;
+        margin: 0px;
+        border: 0px;
+    }
+    .pg-normal
+    {
+        padding: 2px 5px 2px 5px;
+        margin-right: 2px;
+        border: 1px solid #FF9900;
+        text-decoration: none;
+        color: #FF9900;
+        cursor: pointer;
+    }
+    
+    .pg-selected
+    {
+        padding: 2px 5px 2px 5px;
+        margin-right: 2px;
+        border: 1px solid #FF9900;
+        font-weight: bold;
+        background-color: #FF9900;
+        color: #FFF;
+        cursor: pointer;
+    }
+</style>
+<div>
+    <div style="padding: 5px; height: auto; width: 99%; border-radius: 5px; float: left;
+        margin-bottom: 10px; margin-right: 10px;">
+        
+        <br />
+        <hr style="border: 1px solid gainsboro;" />
+        <br />
+
+        <div style="border: 1px solid gainsboro; height: 130px; width: 100px; float: left">
+            @if (Model.Foto == null)
+            {
+                <img src="../../Content/images/sem_foto.png" style="width: 80px; height: 100px;"
+                    alt="Político" />
+            }
+            else
+            {
+                <div>
+                    <img src="@Url.Action("GetImage", "Politicos", new { id = Model.IdPolitico })" alt="Product Image" style="width: 100px; height: 130px;" />
+                </div>
+            }
+            @* <div style="margin: 10px;">
+                
+            </div>*@
+        </div>
+        <table id="tblItens" style="float: left;">
+            <tr style="height: 30px;">
+                <td colspan="2" style="padding-left: 10px;">
+                    <b>@Model.Nome</b>
+                </td>
+            </tr>
+            <tr style="height: 30px;">
+                <td style="width: 60px; padding-left: 10px;">
+                    <b>Cargo:</b>
+                </td>
+                <td>
+                    @Model.MandatoAtual.Cargo
+                </td>
+            </tr>
+            <tr style="height: 30px;">
+                <td style="width: 60px; padding-left: 10px;">
+                    <b>Partido:</b>
+                </td>
+                <td>
+                    <div>
+                        @Model.MandatoAtual.Partido
+                    </div>
+                </td>
+            </tr>
+            <tr style="height: 30px;">
+                <td style="width: 120px; height: 25px; padding-left: 10px;">
+                    <b>Mandato:</b>
+                </td>
+                <td>
+                    @Model.MandatoAtual.PeriodoMandato.DtInicio.ToShortDateString() - @Model.MandatoAtual.PeriodoMandato.DtFim.ToShortDateString()
+                    -
+                    @{
+                        if (Model.MandatoAtual.PeriodoMandato.DtFim > DateTime.Now)
+                        {
+                        <text> <font color="green">(Ativo)</font>
+                        </text>
+                        }
+                        else
+                        {
+                        <text> <font color="red">(Inativo)</font>
+                        </text>
+                        }
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <fieldset style="width: 900px; padding: 8px;" id="fdsOpcoesPesquisa" class="coolfieldset">
+        <legend>&nbsp;Despesas - Mandato Atual:&nbsp;</legend>
+        <table id="tbPoliticosDespesas">
+            <thead>
+                <tr>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ListaDespesasMandatoAtual.Count > 0)
+                {
+                    <tr>
+                        <td>
+                            <table id="tbDespesas" style="margin-left: 10px; border:1px solid black;">
+                                <tr style="color: white; background-color: #FF9900; font-size: 15px; font-weight: 500;
+                                    padding-left: 20px; line-height: 28px; margin: 10px; border:1px solid gainsboro;">
+                                    <td style="width: 550px; text-align: center;">
+                                        <b>Descrição da Despesa</b>
+                                    </td>
+                                    <td style="width: 300px; text-align: center;">
+                                        <b>Nome do Fornecedor</b>
+                                    </td>
+                                    <td style="width: 80px; text-align: center; ">
+                                        <b>Mês/Ano</b>
+                                    </td>
+                                    <td style="width: 50px; text-align: right; ">
+                                    </td>
+                                    <td style="width: 80px; text-align: left;">
+                                        <b>Valor Total</b>
+                                    </td>
+                                </tr>
+                                <tbody>
+                                    @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Despesa d in Model.ListaDespesasMandatoAtual.OrderBy(x => x.Descricao))
+                                    {
+                                        <tr style="height: 23px; border:1px solid gainsboro;">
+                                            <td style="width: 550px; padding-left: 10px;">
+                                                @d.Descricao
+                                            </td>
+                                            <td style="width: 300px; padding-left: 10px;">
+                                                @d.NomeFornecedor
+                                            </td>
+                                            <td style="width: 80px; text-align: center; ">
+                                                @d.MesDespesa/@d.AnoDespesa
+                                            </td>
+                                            <td style="width: 50px; text-align: right; ">
+                                                <b>R$</b>
+                                            </td>
+                                            <td style="width: 80px; text-align: right; padding-right: 10px">
+                                                <b>@String.Format("{0:C}", @d.Valor).ToString().Substring(2).Trim()</b>
+                                            </td>
+                                        </tr>
+                                    
+                                    }
+                                </tbody>
+                            </table>
+                            <div id="idPageNav" class="pagination" style="float: left; width: 100%;">
+                            </div>
+                            <script type="text/javascript">
+                                var pager = new Pager('tbDespesas', 10);
+                                pager.init();
+                                pager.showPageNav('pager', 'idPageNav');
+                                pager.showPage(1);
+                            </script>
+                            <table id="tbTotal" style="width: 98%; margin: 10px;">
+                                <tr>
+                                    <td style="text-align: right;">
+                                        <b>Total de Despesas até o momento: </b><font style="font-size: 20px; color: red;">@String.Format("{0:C}", @Model.ListaDespesasMandatoAtual.Sum(p => p.Valor))</font>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                }
+                else
+                { 
+                    <text><br />
+                    <font style="font-size: 18px; color: red;">* Sem lançamentos de Despesas para este Político!</font></text>
+                }
+            </tbody>
+        </table>
+    </fieldset>
+</div>

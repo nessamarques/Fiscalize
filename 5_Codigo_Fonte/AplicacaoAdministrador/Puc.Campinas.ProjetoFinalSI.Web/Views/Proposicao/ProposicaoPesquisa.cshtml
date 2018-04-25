@@ -1,0 +1,72 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.ProposicaoModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" src="../../Content/paging.js"></script>
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+<link href="../../Content/paging.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript">
+    function pesquisarRegistros(filtro) {
+        location.href = '@Url.Action("PesquisarRegistros", "Proposicao")?param=' + filtro;
+    }
+</script>
+
+<h4>
+    <a class="migalha_pao_inicio" href="@Url.Action("Index", "Home")"> Painel de controle </a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt=""/> </a>
+    <a class="migalha_pao_fim" href="@Url.Action("Index", "Proposicao")"> Manutenção de proposições </a>
+</h4>
+
+@Html.Hidden("IdPolitico")
+<center>
+<b><image src="../../Content/images/info.png" />
+           Selecione um político para continuar a manutenção das proposicões.
+</b></center>
+<br />
+<br />
+<div class="sidebar_search" style="float: right;">
+    <input type="text" id="txtFilter" name="" class="search_input" value="@Model.FiltroPesquisa"/>
+    <input type="image" class="search_submit" src="../../Content/img/magnifier.png" onclick="pesquisarRegistros($('#txtFilter').val())" />
+</div>
+<br />
+<br />
+@*Grid de Políticos*@
+<table id="rounded-corner">
+    <thead>
+        <tr>
+            <th scope="col" class="rounded-company" style="width: 100%">
+                Nome
+            </th>
+            <th scope="col" class="rounded-q4">
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Politico item in Model.ListaPoliticos)
+        {  
+            <tr>
+                <td>
+                    <a href="#" class="ask" onclick="location.href='@Url.Action("PesquisarPolitico", "Proposicao")?idPolitico=' + @item.IdPolitico"> 
+                        @item.Nome
+                    </a>
+                </td>
+                <td>
+                    <a href="#" class="ask" onclick="location.href='@Url.Action("PesquisarPolitico", "Proposicao")?idPolitico=' + @item.IdPolitico">
+                        <img src="../../Content/img/edit.png" alt="" title="" border="0" /></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- div onde será criados os links da paginação -->
+<br />
+<div id="pageNav" class="pagination" style="float: right;">
+</div>
+<script type="text/javascript">
+    var pager = new Pager('rounded-corner', 10);
+    pager.init();
+    pager.showPageNav('pager', 'pageNav');
+    pager.showPage(1);
+</script>

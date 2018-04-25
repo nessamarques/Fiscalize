@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{59AFA1F3-064C-47D7-9EBC-58C3763A409D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Puc.Campinas.ProjetoFinalSI.BO</RootNamespace>
+    <AssemblyName>Puc.Campinas.ProjetoFinalSI.BO</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AcompanhamentoBO.cs" />
+    <Compile Include="AtividadeBO.cs" />
+    <Compile Include="CargoBO.cs" />
+    <Compile Include="CargoComissaoBO.cs" />
+    <Compile Include="CargoMandatoBO.cs" />
+    <Compile Include="CategoriaBO.cs" />
+    <Compile Include="CidadeBO.cs" />
+    <Compile Include="ComissaoBO.cs" />
+    <Compile Include="ConvocadoBO.cs" />
+    <Compile Include="DespesaBO.cs" />
+    <Compile Include="DetalhesPartidoBO.cs" />
+    <Compile Include="EscolaridadeBO.cs" />
+    <Compile Include="EstadoBO.cs" />
+    <Compile Include="FiliacaoBO.cs" />
+    <Compile Include="FuncionalidadeBO.cs" />
+    <Compile Include="GrupoBO.cs" />
+    <Compile Include="ImagemNoticiaBO.cs" />
+    <Compile Include="LocalNoticiaBO.cs" />
+    <Compile Include="NoticiaBO.cs" />
+    <Compile Include="NoticiaPoliticoBO.cs" />
+    <Compile Include="PermissaoBO.cs" />
+    <Compile Include="MandatoBO.cs" />
+    <Compile Include="PaisBO.cs" />
+    <Compile Include="PartidoBO.cs" />
+    <Compile Include="PeriodoMandatoBO.cs" />
+    <Compile Include="PoliticoBO.cs" />
+    <Compile Include="MembroComissaoBO.cs" />
+    <Compile Include="PresencaBO.cs" />
+    <Compile Include="ProfissaoBO.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProposicaoBO.cs" />
+    <Compile Include="RedeSocialBO.cs" />
+    <Compile Include="SessaoBO.cs" />
+    <Compile Include="SessaoProposicaoBO.cs" />
+    <Compile Include="SituacaoBO.cs" />
+    <Compile Include="SituacaoSessaoBO.cs" />
+    <Compile Include="TipoProposicaoBO.cs" />
+    <Compile Include="TipoRedeSocialBO.cs" />
+    <Compile Include="UsuarioBO.cs" />
+    <Compile Include="VotacaoBO.cs" />
+    <Compile Include="VotoBO.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Puc.Campinas.ProjetoFinalSI.DAO\Puc.Campinas.ProjetoFinalSI.DAO.csproj">
+      <Project>{FF31B40D-49FC-46B9-A7A0-61B60DFE007D}</Project>
+      <Name>Puc.Campinas.ProjetoFinalSI.DAO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Puc.Campinas.ProjetoFinalSI.Entidade\Puc.Campinas.ProjetoFinalSI.Entidade.csproj">
+      <Project>{291A63E2-C38D-48CC-A859-18FD054358C7}</Project>
+      <Name>Puc.Campinas.ProjetoFinalSI.Entidade</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

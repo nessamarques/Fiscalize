@@ -1,0 +1,340 @@
+﻿@model List<Puc.Campinas.ProjetoFinalSI.Entidade.Politico>
+<script type="text/javascript" src="../../Content/paging.js"></script>
+<style type="text/css">
+    .pg-ctrl
+    {
+        font: 16px verdana;
+        color: #8CBD20;
+        text-decoration: none;
+        cursor: pointer;
+        padding: 4px;
+        margin: 0px;
+        border: 0px;
+    }
+    .pg-normal
+    {
+        padding: 2px 5px 2px 5px;
+        margin-right: 2px;
+        border: 1px solid #8CBD20;
+        text-decoration: none;
+        color: #8CBD20;
+        cursor: pointer;
+    }
+    
+    .pg-selected
+    {
+        padding: 2px 5px 2px 5px;
+        margin-right: 2px;
+        border: 1px solid #8CBD20;
+        font-weight: bold;
+        background-color: #8CBD20;
+        color: #FFF;
+        cursor: pointer;
+    }
+</style>
+<script type="text/javascript">
+
+    function obterBiografia(idPolitico) {
+
+        $.ajax({
+            type: "GET",
+            url: "GetBiografiaPolitico",
+            data:
+                {
+                    idPolitico: idPolitico
+                },
+            success: function (data) {
+                if (data != '[object XMLDocument]') {
+                    $('#divPoliticos').html(data);
+                    $('#divPoliticos').show('slow');
+                    $('#div1').hide();
+                }
+            }
+        });
+
+    }
+
+    function allowDrop(ev) {
+        $('#div1').css('background-color', '#8CBD20');
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("Text", ev.target.id);
+    }
+
+    function drop(ev) {
+
+        $('#div1').css('background-color', 'white');
+
+        ev.preventDefault();
+
+        var data = ev.dataTransfer.getData("Text");
+
+        var idPolitico = data.split('drag')[1];
+
+        if (verificaPoliticoRepetido(idPolitico) == 'N') {
+            //if (confirm('Você gostaria de acompanhar este político?')) {
+                
+                $('#PoliticosAcompanhadosUserLogado').val($('#PoliticosAcompanhadosUserLogado').val() + idPolitico + ',');
+
+                salvarAcompanhamento(idPolitico.split('-')[0]);
+
+                $('#politicos').empty();
+
+                popularPoliticosAcompanhamento();
+//            }
+//            else {
+//                ev.preventDefault();
+//                $('#div1').css('background-color', 'white');
+//            }
+        }
+        else {
+            alert('Você já está acompanhando este político!');
+            ev.preventDefault();
+            $('#div1').css('background-color', 'white');
+        }
+    }
+
+    function salvarAcompanhamento(idPolitico) {
+        $.ajax({
+            type: "GET",
+            url: "SalvarAcompanhamento",
+            data:
+                {
+                    idPolitico: idPolitico
+                },
+        });
+    }
+
+     function excluirAcompanhamento(idPolitico) {
+        $.ajax({
+            type: "GET",
+            url: "ExcluirAcompanhamento",
+            data:
+                {
+                    idPolitico: idPolitico
+                }
+        });
+    }
+
+    function verificaPoliticoRepetido(idPolitico) {
+
+        var existe = 'N';
+
+        if ($('#PoliticosAcompanhadosUserLogado').val() != '') {
+            $.each($('#PoliticosAcompanhadosUserLogado').val().split(','), function (index, value) {
+
+                if (value.contains(idPolitico)) {
+                    existe = 'S';
+                }
+            });
+        }
+
+        return existe;
+    }
+
+    function popularPoliticosAcompanhamento() {
+
+        if ($('#PoliticosAcompanhadosUserLogado').val() != '') {
+    
+            var politicosParaExibir = $('#PoliticosAcompanhadosUserLogado').val().split(',');
+
+            $('#politicos').empty();
+
+            var html = '';
+
+            html += '<table id=\'tbAcompanhamento\'>';
+            html += '<thead><tr></tr></thead>';
+            html += '<tbody>';
+            
+            for (var x = 0; x < politicosParaExibir.length; x++) {
+                
+                if (politicosParaExibir[x] != '' && politicosParaExibir[x] != 0) {
+
+                    var idPolitico = parseInt(politicosParaExibir[x].split('-')[0]);
+
+                    var nomePolitico = politicosParaExibir[x].split('-')[1];
+
+                    var idChkNoticia = 'IsNoticia' + idPolitico;
+                    var onClickChkNoticia = 'selecionarActionAcompanhamento(' + idPolitico + ',' + 'IsNoticia' + idPolitico + ');';
+
+                    var idChkDespesa = 'IsDespesa' + idPolitico;
+                    var onClickChkDespesa = 'selecionarActionAcompanhamento(' + idPolitico + ',' + 'IsDespesa' + idPolitico + ');';
+
+                    var idChkProjetoLei = 'IsProjetoLei' + idPolitico;
+                    var onClickChkProjetoLei = 'selecionarActionAcompanhamento(' + idPolitico + ',' + 'IsProjetoLei' + idPolitico + ');';
+
+                    var link = '@Url.Action("GetImage", "Politicos", new { id = "-1" })';
+                    link = link.replace("-1", idPolitico);
+
+                    html += '<tr>';
+                    html += '<td>';
+                    html += '<fieldset style=\'margin-bottom:10px; padding:5px; border:1px solid gainsboro; height:90px; width:400px; border-radius:5px;\'>';
+                    html += '<div style="width:80px; height:90px; float:left;margin-right:5px;"><img src=\'' + link + '\' alt=\'Product Image\' style=\'border:1px solid gainsboro; width:80px; height:90px;\' /></div>';
+                    html += '<div style="width:315px; height:80px; float:left;">';
+                    html += '<table id=\"tblLixao\" style=\'margin-bottom:10px;\'>';
+                    html += '<tr style=\'height:20px;\'>';
+                    html += '<td style=\'width:315px;\'><b>' + nomePolitico + '</b></td><td><img src=\'../../Content/img/trash1.png\' onclick=\'excluirPoliticoAcompanhamento(' + idPolitico + ')\' style=\'cursor:pointer;\'></img></td>'
+                    html += '</tr>';
+                    html += '<tr style=\'height:20px;\'>';
+                    html += '<td><input class="slideThree" type="checkbox" id=\"' + idChkNoticia + '\" onclick=\"' + onClickChkNoticia + '\"> Feed de Notícias<br>';
+                    html += '<input type="checkbox" id=\"' + idChkDespesa + '\" onclick=\"' + onClickChkDespesa + '\"> Despesas<br>'; 
+                    html += '<input type="checkbox" id=\"' + idChkProjetoLei + '\" onclick=\"' + onClickChkProjetoLei + '\"> Projetos de Lei <br></td>';
+                    html += '</tr>';
+                    html += '</table></div><fieldset>';
+                    html += '</td>';
+                    html += '</tr>';
+
+                }
+            }
+
+            html += '</tbody>';
+            html += '</table>';
+            
+            $('#politicos').append(html); 
+
+            carregarSelecoesUsuario();
+
+        }
+        else {
+            $('#politicos').empty();
+        }
+    }
+
+    function selecionarActionAcompanhamento(idPolitico, idCheckBox)
+    {
+        $.ajax({
+        type: "GET",
+        url: "EditAcompanhamento",
+        data:
+            {
+                idPolitico: idPolitico,
+                idCheck: idCheckBox.id,
+                isChecked: $('#' + idCheckBox.id).is(':checked')
+            }
+        });
+    }
+
+    function carregarSelecoesUsuario()
+    {
+        $.ajax({
+        type: "GET",
+        url: "LoadSelections",
+        success: function(data)
+        {
+            if(data != "[object XMLDocument]")
+            {
+                $.each(data.split('-'), function (index, value) {
+                   $('#' + value).attr('checked','checked');
+                });
+            }
+        }
+        });
+    }
+
+    function excluirPoliticoAcompanhamento(politicoExcluido) {
+
+        if (confirm('Você tem certeza que deseja deixar de acompanhar este político?')) {
+            $.each($('#PoliticosAcompanhadosUserLogado').val().split(','), function (index, value) {
+
+                if (value.contains(politicoExcluido.toString())) {
+                    $('#PoliticosAcompanhadosUserLogado').val($('#PoliticosAcompanhadosUserLogado').val().replace(value + ',', ''));
+                    excluirAcompanhamento(politicoExcluido);
+                }
+            });
+
+            popularPoliticosAcompanhamento();
+        }
+    }
+
+    $(document).ready(function(){
+    
+        $.ajax({
+        type: "GET",
+        url: "VerificarPoliticosAcompanhadosByUser",
+        success: function(data)
+        {
+            if(data != '' && data != '[object XMLDocument]'){
+                
+                $('#PoliticosAcompanhadosUserLogado').val(data);
+                
+                    popularPoliticosAcompanhamento();
+                }
+        }
+        });
+    
+    });
+
+</script>
+<div>
+    <table id="tbPoliticos">
+        <thead>
+            <tr>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int x = 0; x < Model.Count(); x++)
+            {
+                <tr style="padding: 5px; border: 1px solid gainsboro; height: 130px; width: 460px;
+                    border-radius: 5px; float: left; margin-bottom: 10px; margin-right: 10px;">
+                    <td>
+                        <div style="border: 1px solid gainsboro; height: 130px; width: 100px;">
+                            @if (Model[x].Foto == null)
+                            {
+                                <img src="../../Content/images/sem_foto.png" style="width: 80px; height: 100px;"
+                                    alt="Político" />
+                            }
+                            else
+                            {
+                                string id = "drag" + Model[x].IdPolitico + '-' + Model[x].Nome;
+                                <div id="@id" draggable="true" ondragstart="drag(event)">
+                                    <img src="@Url.Action("GetImage", "Politicos", new { id = Model[x].IdPolitico })" id="@id" alt="Product Image" style="width: 100px; height: 130px;" />
+                                </div>
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <div style="margin: 10px;">
+                            <b>@Model[x].Nome</b>
+                        </div>
+                        <table id="tblItens">
+                            <tr>
+                                <td style="width: 60px; padding-left: 10px;">
+                                    <b>Cargo:</b>
+                                </td>
+                                <td>
+                                    @Model[x].MandatoAtual.Cargo
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 60px; padding-left: 10px;">
+                                    <b>Partido:</b>
+                                </td>
+                                <td>
+                                    <div>
+                                        @Model[x].MandatoAtual.Partido
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="width: 100px; padding-left: 10px; margin-top: 10px;">
+                            <a href="#" onclick="obterBiografia(@Model[x].IdPolitico);" style="color:Black;">Ver
+                                Biografia</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!-- div onde será criados os links da paginação -->
+    <div id="pageNav" class="pagination" style="float: left; width: 450px;">
+    </div>
+    <script type="text/javascript">
+        var pager = new Pager('tbPoliticos', 5);
+        pager.init();
+        pager.showPageNav('pager', 'pageNav');
+        pager.showPage(1);
+    </script>
+</div>
+@Html.Hidden("PoliticosAcompanhadosUserLogado")

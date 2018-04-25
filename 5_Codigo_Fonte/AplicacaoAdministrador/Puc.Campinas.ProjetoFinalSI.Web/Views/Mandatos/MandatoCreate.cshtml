@@ -1,0 +1,161 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.MandatoModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(function ($) {
+        $("#txtTelefone").mask("(99)9999-9999");
+        $("#txtFax").mask("(99)9999-9999");
+        $("#txtCEP").mask("99999-999");
+    });
+
+    $(document).ready(function () {
+
+        $("#ddlCargo").attr('disabled', 'disabled');
+        $("#ddlCidade").attr('disabled', 'disabled');
+
+        $("#ddlPeriodoMandato").change(function () {
+            $.ajax({
+                type: "POST",
+                url: "ObterCargosPeriodoMandato",
+                data: { idPeriodoMandato: $("#ddlPeriodoMandato").val() },
+                dataType: "json",
+                success: function (data) {
+                    if (data != '') {
+
+                        $("#ddlCargo").html('');
+
+                        $.each(data, function (i, item) {
+                            $("#ddlCargo").append("<option value='" + data[i].IdCargo + "'>" + data[i].Nome + "</option>");
+                        })
+
+                        $("#ddlCargo").removeAttr('disabled');
+                    }
+                    else {
+                        $("#ddlCargo").html('');
+                        $("#ddlCargo").attr('disabled', 'disabled');
+                    }
+                }
+            });
+        });
+
+        $("#ddlEstado").change(function () {
+            $.ajax({
+                type: "POST",
+                url: "ObterCidadesByIdEstado",
+                data: { idEstado: $("#ddlEstado").val() },
+                dataType: "json",
+                success: function (data) {
+                    if (data != '') {
+
+                        $("#ddlCidade").html('');
+
+                        $.each(data, function (i, item) {
+                            $("#ddlCidade").append("<option value='" + data[i].IdCidade + "'>" + data[i].Nome + "</option>");
+                        })
+
+                        $("#ddlCidade").removeAttr('disabled');
+                    }
+                    else {
+                        $("#ddlCidade").html('');
+                        $("#ddlCidade").attr('disabled', 'disabled');
+                    }
+                }
+            });
+        });
+
+    });
+
+</script>
+<h4>
+    <a class="migalha_pao_inicio" href="@Url.Action("Index", "Home")"> Painel de controle </a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt=""/> </a>
+    <a class="migalha_pao_meio" href="@Url.Action("Index", "Mandatos")"> Manutenção de mandatos </a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt=""/> </a>
+    <a class="migalha_pao_fim" href="#"> Incluir mandato </a>
+</h4>
+@using (Html.BeginForm("Create", "Mandatos", FormMethod.Post, new { id = "frmCreateMandatos" }))
+{   
+    @Html.ValidationSummary(false);
+    @Html.Hidden("IdMandato", Model.IdMandato)    
+    @Html.Hidden("IdPolitico", Model.IdPolitico)
+    
+<fieldset style="margin:10px 0px 10px 0px;">
+<legend><b>Incluir mandato</b></legend>
+    <table>
+        <tr>
+            <td>@Html.Label("* Partido: ")</td>
+            <td>@Html.DropDownListFor(x => x.IdPartido, new SelectList(Model.ListaPartido, "IdPartido", "Sigla"), "Selecione ...", new { @style = "width:250px;", @class = "select" })</td>
+        </tr>
+        <tr>
+            <td>@Html.Label("* Período do mandato: ")</td>
+            <td>@Html.DropDownListFor(x => x.IdPeriodoMandato, new SelectList(Model.ListaPeriodoMandato, "IdPeriodoMandato", "RangeDatas"), "Selecione ...", new { @style = "width:250px;", @id = "ddlPeriodoMandato", @class = "select" })</td>
+        </tr>
+        <tr>
+            <td>@Html.Label("* Cargo: ")</td>
+            <td>@Html.DropDownListFor(x => x.IdCargo, new SelectList(Model.ListaCargos, "IdCargo", "Nome"), "Selecione ...", new { @style = "width:250px;", @id = "ddlCargo", @class = "select" })</td>
+        </tr>
+        <tr>
+            <td colspan="2">@Html.CheckBoxFor(x => x.IsMandatoAtual)<label>Mandato Atual</label></td>
+        </tr>
+    </table>
+
+    <fieldset style="margin:10px 0px 10px 0px;">
+    <legend>Contato</legend>
+        <table>
+            <tr>
+                <td>@Html.Label("Telefone: ")</td>
+                <td>@Html.TextBoxFor(x => x.Telefone, new { @id = "txtTelefone", @style = "width:100px; text-transform:uppercase;", @class = "input_text" })</td>
+                <td>@Html.Label("Fax: ")</td>
+                <td>@Html.TextBoxFor(x => x.Fax, new { @id = "txtFax", @style = "width:100spx; text-transform:uppercase;", @class = "input_text" })</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>@Html.Label("* Endereço: ")</td>
+                <td colspan="3">@Html.TextBoxFor(x => x.Endereco, new { @id = "txtEndereco", @style = "width:300px;", @maxlength = "50", @class = "input_text" })</td>
+                <td>@Html.Label("* CEP: ")</td>
+                <td>@Html.TextBoxFor(x => x.CEP, new { @id = "txtCEP", @style = "width:100px;", @maxlength = "50", @class = "input_text" })</td>
+            </tr>
+            <tr>
+                <td>@Html.Label("* Estado: ")</td>
+                <td>@Html.DropDownListFor(x => x.IdEstado, new SelectList(Model.ListEstado, "IdEstado", "Sigla"), "Selecione ...", new { @style = "width:100px;", @id = "ddlEstado", @class = "select" })</td>
+                <td>@Html.Label("* Cidade: ")</td>
+                <td colspan="3">@Html.DropDownListFor(x => x.IdCidade, new SelectList(Model.ListCidade, "IdCidade", "Nome"), new { @style = "width:250px;", @id = "ddlCidade", @class = "select" })</td>
+            </tr>
+            <tr>
+                <td>@Html.Label("Gabinete: ")</td>
+                <td>@Html.TextBoxFor(x => x.Gabinete, new { @id = "txtGabinete", @style = "width:100px; text-transform:uppercase;", @class = "input_text" })</td>
+                <td>@Html.Label("Anexo: ")</td>
+                <td colspan="3">@Html.TextBoxFor(x => x.Anexo, new { @id = "txtAnexo", @style = "width:300px;", @class = "input_text" })</td>
+            </tr>
+        </table>
+    </fieldset>
+
+    <div id="botoesInferiores" align="right">
+    <br />
+        <table>
+            <tr>
+                <td>
+                    <a class="bt_blue" href="#" onclick="location.href='@Url.Action("Index", "Mandatos")'">
+                        <span class="bt_blue_lft"></span>
+                        <strong>Voltar</strong>
+                        <span class="bt_blue_r"></span>
+                    </a>
+                </td>
+                <td>
+                    <a class="bt_blue" href="#" onclick="$('#frmCreateMandatos').submit();">
+                        <span class="bt_blue_lft"></span>
+                        <strong>Salvar</strong>
+                        <span class="bt_blue_r"></span>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</fieldset> 
+}

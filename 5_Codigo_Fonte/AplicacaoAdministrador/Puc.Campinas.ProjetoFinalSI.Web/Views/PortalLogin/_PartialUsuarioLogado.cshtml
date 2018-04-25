@@ -1,0 +1,13 @@
+﻿@model List<Puc.Campinas.ProjetoFinalSI.Entidade.Usuario>
+@foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Usuario item in Model)
+{
+    <br />
+    <table>
+        <tr>
+        @*<td><label style="margin: 0px 5px 0px 0px">Seja bem vindo @AutenticacaoUsuarioMVC3.Models.UsersRepository.UsuarioLogado.Nome</label></td>*@
+            <td><label style="margin: 0px 5px 0px 0px">Seja bem vindo @item.Nome</label></td>
+            <td><label style="margin: 0px 5px 0px 0px"> | </label></td>
+            <td><a href="@Url.Action("Inicio", "Home")" >Sair</a></td>
+        </tr>
+    </table>
+}

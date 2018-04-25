@@ -1,0 +1,251 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.NoticiaModel
+@{
+    ViewBag.Title = "ListagemNoticias";
+}
+<script type="text/javascript" src="../../Content/paging.js"></script>
+<script type="text/javascript">
+
+    function adicionarNoticia() {
+
+        var area = '@Model.AreaSelecionada';
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Content("~/PortalNoticias/IncluirNoticia")',
+            data: { areaSelecionada: area },
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data != '') {
+
+                    $('#divManutencaoNoticias').html(data);
+                    $('#divManutencaoNoticias').show();
+                }
+            }
+        });
+    }
+
+    function excluir(id) {
+        if (confirm('Você tem certeza que deseja excluir esta notícia?')) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/PortalNoticias/Delete")',
+                data: { id: id, idAreaSelecionada: '@Model.AreaSelecionada' },
+                async: false,
+                cache: false,
+                success: function (data) {
+                    if (data != '') {
+                        $('#divManutencaoNoticias').html(data);
+                        $('#divManutencaoNoticias').show();
+                    }
+                }
+            });
+        }
+    }
+
+    function desativarNoticia(id) {
+        if (confirm('Desativando esta notícia, ela será retirada do portal. Deseja Continuar?')) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/PortalNoticias/DesativarNoticia")',
+                data: { id: id, idAreaSelecionada: '@Model.AreaSelecionada' },
+                async: false,
+                cache: false,
+                success: function (data) {
+                    if (data != '') {
+                        $('#divManutencaoNoticias').html(data);
+                        $('#divManutencaoNoticias').show();
+                    }
+                }
+            });
+        }
+    }
+
+    function ativarNoticia(id) {
+        if (confirm('Ativando esta notícia, ela será exibida do portal. Deseja Continuar?')) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/PortalNoticias/AtivarNoticia")',
+                data: { id: id, idAreaSelecionada: '@Model.AreaSelecionada' },
+                async: false,
+                cache: false,
+                success: function (data) {
+                    if (data != '') {
+                        $('#divManutencaoNoticias').html(data);
+                        $('#divManutencaoNoticias').show();
+                    }
+                }
+            });
+        }
+    }
+
+    function editarNoticia(id) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Content("~/PortalNoticias/Edit")',
+            data: { id: id, idAreaSelecionada: '@Model.AreaSelecionada' },
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data != '') {
+                    $('#divManutencaoNoticias').html(data);
+                    $('#divManutencaoNoticias').show();
+                }
+            }
+        });
+    }
+
+</script>
+<style>
+    .pg-ctrl
+    {
+        font: 16px verdana;
+        color: #3081C8;
+        text-decoration: none;
+        cursor: pointer;
+        padding: 4px;
+        margin: 0px;
+        border: 0px;
+    }
+    .pg-normal
+    {
+        padding: 2px 5px 2px 5px;
+        margin-right: 2px;
+        border: 1px solid #3081C8;
+        text-decoration: none;
+        color: #3081C8;
+        cursor: pointer;
+    }
+    
+    .pg-selected
+    {
+        padding: 2px 5px 2px 5px;
+        margin-right: 2px;
+        border: 1px solid #3081C8;
+        font-weight: bold;
+        background-color: #3081C8;
+        color: #FFF;
+        cursor: pointer;
+    }
+</style>
+<div style="text-align: center;">
+    <b>Atenção! Você está realizando Manutenção de Notícias
+        @{
+            if (Model.AreaSelecionada == 1)
+            {
+            <text> no <font color="red">Cabeçalho </font>
+            </text>
+            }
+
+            if (Model.AreaSelecionada == 2)
+            {
+            <text> na <font color="red">Esquerda </font>
+            </text>
+            }
+
+            if (Model.AreaSelecionada == 3)
+            {
+            <text> na <font color="red">Direita </font>
+            </text>
+            }  
+        }
+        do portal.</b>
+</div>
+<br />
+<button type="button" onclick="adicionarNoticia();" style="float: left; height: 30px;
+    cursor: pointer; border-radius: 4px; background-color: #3081c8; color: white;">
+    Adicionar Notícia</button>
+<br />
+<br />
+<br />
+<table style="width: 935px; border-radius: 4px; color: white; background-color: #3081C8;
+    font-size: 15px; font-weight: 500; padding-left: 20px; line-height: 28px; margin-bottom: 5px;">
+    <tr>
+        <td style="width: 80px; text-align: center;">
+            Status
+        </td>
+        <td style="width: 80px; text-align: center;">
+            Código
+        </td>
+        <td style="width: 480px; text-align: center;">
+            Título da Notícia
+        </td>
+        <td style="width: 80px; text-align: center;">
+            Inclusão
+        </td>
+        <td style="width: 100px; text-align: center;">
+            Ações
+        </td>
+    </tr>
+</table>
+<table id="tbNoticias" style="width: 935px; font-size: 15px; font-weight: 500; padding-left: 20px;
+    line-height: 30px;">
+    @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Noticia item in Model.ListaNoticias)
+    {
+        <tr style="border-bottom: 1px solid gainsboro;">
+            <td style="width: 80px; text-align: center;">
+                @{
+        if (item.Ativo == 1)
+        { 
+                    <img src="../../Content/img/bullet-green.png" alt="Notícia Ativa" title="Notícia Ativa" />
+        }
+        else
+        {
+                    <img src="../../Content/img/bullet-grey.png" alt="Notícia Inativa" title="Notícia Inativa" /> 
+        }    
+                }
+            </td>
+            <td style="width: 80px; text-align: center;">
+                @item.IdNoticia
+            </td>
+            <td style="width: 480px; text-align: left;">
+                @item.Titulo
+            </td>
+            <td style="width: 80px; text-align: center;">
+                @item.DtInclusao.ToShortDateString()
+            </td>
+            <td style="width: 100px; text-align: center;">
+                <table>
+                    <tr>
+                        <td style="width: 20px;">
+                            <img style="margin: 5px; cursor:pointer;" src="../../Content/img/trash1.png" alt="Excluir Notícia"
+                    title="Excluir Notícia" onclick="excluir('@item.IdNoticia');"/>
+                        </td>
+                        <td style="width: 20px;">
+                            @if (item.Ativo == 1)
+                            {
+                                <img style="margin: 5px; cursor:pointer;" src="../../Content/img/edit1.png" alt="Editar Notícia"
+                            title="Editar Notícia" onclick="editarNoticia('@item.IdNoticia');"/>
+                            }
+                        </td>
+                        <td style="width: 20px;">
+                            @if (item.Ativo == 1)
+                            {
+                                <img style="margin: 5px; cursor:pointer;" src="../../Content/img/disable.png" alt="Desativar Notícia"
+                                title="Desativar Notícia" onclick="desativarNoticia('@item.IdNoticia');"/>
+                            }
+                        </td>
+                        <td style="width: 20px;">
+                            @if (item.Ativo == 0)
+                            { 
+                                <img style="margin: 5px; cursor:pointer;" src="../../Content/img/activate.png" alt="Ativar Notícia"
+                            title="Ativar Notícia" onclick="ativarNoticia('@item.IdNoticia');"/>
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    
+    }
+</table>
+<!-- div onde será criados os links da paginação -->
+<br />
+<div id="pageNav" class="pagination" style="width: 950px">
+</div>
+<script type="text/javascript">
+    var pager = new Pager('tbNoticias', 10);
+    pager.init();
+    pager.showPageNav('pager', 'pageNav');
+    pager.showPage(1);
+</script>

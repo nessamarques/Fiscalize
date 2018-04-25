@@ -1,0 +1,120 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.DetalhesPartidoModel
+@{
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<script type="text/javascript">
+</script>
+<h3 style="background: none repeat scroll 0 0 #f09e2f;">@Model.NomePartido</h3>
+<fieldset style="border: 1px solid gainsboro; border-radius: 10px; padding: 10px 10px 10px 10px;">
+    <legend><b><font style="font-size: 15px;">&nbsp;Informações Gerais&nbsp;</font></b></legend>
+    <br />
+    <table>
+        <tr>
+            <td style="width: 100px; padding-right: 10px; height: 25px;">
+                <b>Nome: </b>
+            </td>
+            <td>
+                @Model.NomePartido
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100px; padding-right: 10px; height: 25px;">
+                <b>Sigla: </b>
+            </td>
+            <td>
+                @Model.SiglaPartido
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100px; padding-right: 10px; height: 25px;">
+                <b>Número: </b>
+            </td>
+            <td>
+                @Model.NroPartido
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100px; padding-right: 10px; height: 25px;">
+                <b>Deferimento: </b>
+            </td>
+            <td>
+                @Model.DeferimentoPartido.ToShortDateString()
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100px; padding-right: 10px; height: 25px;">
+                <b>Presidente: </b>
+            </td>
+            <td>
+                @Model.PresidenteNacional
+            </td>
+        </tr>
+    </table>
+    <br />
+    <fieldset style="border: 1px solid gainsboro; border-radius: 10px; padding: 10px 10px 10px 10px;">
+        <legend><b><font style="font-size: 15px;">Contatos</font></b></legend>
+        <br />
+        <table>
+            <tr>
+                <td style="padding-right: 10px; height: 25px;">
+                    <b>Endereço: </b>
+                </td>
+                <td>
+                    @Model.Endereco
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-right: 10px; height: 25px;">
+                    <b>Cidade: </b>
+                </td>
+                <td>
+                    @Model.Cidade
+                </td>
+                <td style="padding-right: 10px; height: 25px;">
+                    <b>Estado: </b>
+                </td>
+                <td>
+                    @Model.Estado
+                </td>
+                <td style="padding-right: 10px; height: 25px;">
+                    <b>CEP:</b>
+                </td>
+                <td>
+                    @Model.CEP
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-right: 10px; height: 25px;">
+                    <b>Telefone: </b>
+                </td>
+                <td>
+                    @Model.Telefone
+                </td>
+                <td style="padding-right: 10px; height: 25px;">
+                    <b>Fax: </b>
+                </td>
+                <td>
+                    @Model.Fax
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-right: 10px; height: 25px;">
+                    <b>Site: </b>
+                </td>
+                <td>
+                    @Model.Site
+                </td>
+                <td style="padding-right: 10px; height: 25px;">
+                    <b>Email: </b>
+                </td>
+                <td>
+                    @Model.Email
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+</fieldset>
+<br />
+<button style="float: right; height: 30px; cursor: pointer; width: 70px; margin-left: 5px;
+    border-radius: 4px; background-color: #f09e2f; color: white;" onclick="location.href='@Url.Action("Index", "PortalPartidos")'" type="button">
+    Voltar</button>

@@ -1,0 +1,338 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.NoticiaModel
+@{
+    ViewBag.Title = "_PortalNoticiasEdicao";
+}
+<style type="text/css">
+    .addNoticia
+    {
+        cursor: pointer;
+        border: 1px dashed #DADADA;
+        border-radius: 3px 3px 3px 3px;
+        box-shadow: none;
+        display: inline-block;
+        position: relative;
+        text-align: center;
+        width: 130px;
+        height: 125px;
+        float: left;
+        margin: 5px;
+    }
+</style>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#jqte-test').jqte();
+
+        // settings of status
+        var jqteStatus = true;
+        $("#status").click(function () {
+            jqteStatus = jqteStatus ? false : true;
+            $('#jqte-test').jqte({ "status": jqteStatus })
+        });
+
+        countCaracter('#txtTitulo', '#counterTitulo');
+        countCaracter('#txtSubTitulo', '#counterSubTitulo');
+        countCaracter('#txtResumo', '#counterResumo');
+
+        populaPoliticos();
+
+    });
+
+    function countCaracter(id, div) {
+        var target = $(div);
+        var max = target.attr('title');
+        var len = $(id).val().length;
+        var remain = max - len;
+        if (len > max) {
+            var val = $(id).val();
+            $(id).val(val.substr(0, max));
+            remain = 0;
+        }
+        $(div).html(' Restam ' + remain + ' Caracteres.');
+    }
+
+    function salvar() {
+
+        var ret = validar();
+
+        if (ret == true) {
+            $('#frmEditNoticia').submit();
+        }
+    }
+
+    function voltar() {
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Content("~/PortalNoticias/ManterNoticiasByArea")',
+            data: { areaSelecionada: '@Model.AreaSelecionada' },
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data != '') {
+                    $('#divManutencaoNoticias').html(data);
+                    $('#divManutencaoNoticias').show();
+                }
+            }
+        });
+    }
+
+    function validar() {
+
+        var isvalid = true;
+
+        if ($('#txtTitulo').val() == '') {
+            $('#invalidTitulo').show();
+            isvalid = false;
+        }
+        else {
+            $('#invalidTitulo').hide();
+        }
+
+        if ($('#txtResumo').val() == '') {
+            $('#invalidNoticiaResumida').show();
+            isvalid = false;
+        }
+        else {
+            $('#invalidNoticiaResumida').hide();
+        }
+
+        if ($('#txtConteudo').val() == '') {
+            $('#invalidNoticiaDetalhada').show();
+            isvalid = false;
+        }
+        else {
+            $('#invalidNoticiaDetalhada').hide();
+        }
+
+        return isvalid;
+    }
+
+    function vincularPolitico() {
+
+        if ($('#ddlPoliticos').val() == null || $('#ddlPoliticos').val() == '' || $('#ddlPoliticos').val() == 'Selecione') {
+            $('#divValidation').html('* É necessário selecionar um político');
+            $('#divValidation').show();
+        }
+        else {
+
+            if (!$('#PoliticosSelecionados').val().contains($('#ddlPoliticos').val())) {
+                $('#divValidation').hide();
+
+
+                $('#PoliticosSelecionados').val($('#PoliticosSelecionados').val() + $('#ddlPoliticos').val() + ',');
+
+                populaPoliticos();
+            }
+            else {
+                alert('Este político já foi relacionado para esta notícia!');
+            }
+        }
+    }
+
+    function populaPoliticos() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Content("~/PortalNoticias/AdicionarPolitico")',
+            data: { politicos: $('#PoliticosSelecionados').val() },
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data != '') {
+                    $('#dynamic').html(data);
+                    $('#dynamic').show();
+                }
+            }
+        });
+    }
+
+    function ddlCargos_change() {
+        if ($("#ddlCargos").val() != '' && $("#ddlCargos").val() != 'Selecione') {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/PortalNoticias/ObterPoliticosByCargo")',
+                data:
+            {
+                idCargo: $("#ddlCargos").val()
+            },
+                dataType: "json",
+                success: function (data) {
+                    if (data != '') {
+
+                        $("#ddlPoliticos").html('');
+
+                        $("#ddlPoliticos").append("<option value='Selecione'>Selecione</option>");
+
+                        $.each(data, function (i, item) {
+                            $("#ddlPoliticos").append("<option value='" + data[i].IdPolitico + "'>" + data[i].Nome + "</option>");
+                        })
+
+                        $("#ddlPoliticos").removeAttr('disabled');
+                    }
+                    else {
+                        $("#ddlPoliticos").html('');
+                        $("#ddlPoliticos").attr('disabled', 'disabled');
+                    }
+                }
+            });
+        }
+        else {
+            $("#ddlPoliticos").html('');
+            $("#ddlPoliticos").attr('disabled', 'disabled');
+        }
+    }
+
+    function excluirPolitico(idPolitico) {
+        $('#PoliticosSelecionados').val($('#PoliticosSelecionados').val().replace(idPolitico + ',', ''));
+        populaPoliticos();
+    }
+
+</script>
+@using (Html.BeginForm("Edit", "PortalNoticias", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmEditNoticia" }))
+{   
+    @Html.Hidden("AreaSelecionada", Model.AreaSelecionada)
+    @Html.Hidden("IdNoticia", Model.IdNoticia)
+    @Html.Hidden("PoliticosSelecionados", Model.PoliticosSelecionados)
+    <div style="text-align: center;">
+        <b>Atenção! Você está editando uma notícia
+            @{
+                if (Model.AreaSelecionada == 1)
+                {
+                   <text> do <font color="red">Cabeçalho </font>
+                   </text>
+                }
+
+                if (Model.AreaSelecionada == 2)
+                {
+                   <text> da <font color="red">Esquerda </font>
+                   </text>
+                }
+
+                if (Model.AreaSelecionada == 3)
+                {
+                   <text> da <font color="red">Direita </font>
+                   </text>
+                }  
+            }
+            do portal.</b>
+    </div>
+    <br />
+    <br />
+    <fieldset style="border: 1px solid gainsboro; padding: 10px;">
+        <legend><b>&nbsp;Adicione um Vídeo&nbsp;</b></legend>
+        <table>
+            <tr style="width: 800px;">
+                <td style="padding-top: 12px; padding-right: 10px; float: right;">
+                    Link do Youtube:
+                </td>
+                <td colspan="3">@Html.TextBoxFor(x => x.LinKVideo, new { @id = "txtLinkVideo", @style = "width:800px;", @class = "caixaTextoPortal", @maxlength = "60"})
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <br />
+    <fieldset style="border: 1px solid gainsboro; padding: 10px;">
+        <legend><b>&nbsp;Informações da Notícia&nbsp;</b></legend>
+        <br />
+        <table>
+            <tr style="width: 600px;">
+                <td style="padding-top: 12px; padding-right: 10px; float: left;">
+                    <b>Título: * </b>
+                </td>
+                <td colspan="3">
+                    @Html.TextBoxFor(x => x.Titulo, new { @id = "txtTitulo", @style = "width:600px;", @class = "caixaTextoPortal", @maxlength = "100", @onkeyup = "countCaracter('#txtTitulo', '#counterTitulo');" })
+                    <div id="counterTitulo" style="text-align: left; font-size: 12px; color: #999999;
+                        line-height: 12px;" title="100">
+                        Restam 100 Caracteres.</div>
+                </td>
+                <td id="invalidTitulo" style="padding-top: 12px; padding-left: 10px; padding-right: 10px;
+                    float: left; color: red; display: none;">
+                    * Campo Obrigatório
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-top: 12px; padding-right: 10px; float: left;">
+                    Sub-Título:
+                </td>
+                <td colspan="3">@Html.TextBoxFor(x => x.Subtitulo, new { @id = "txtSubTitulo", @style = "width:600px;", @class = "caixaTextoPortal", @maxlength = "100", @onkeyup = "countCaracter('#txtSubTitulo', '#counterSubTitulo');" })
+                    <div id="counterSubTitulo" style="text-align: left; font-size: 12px; color: #999999;
+                        line-height: 12px;" title="100">
+                        Restam 100 Caracteres.</div>
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <br />
+    <fieldset style="border: 1px solid gainsboro; padding: 10px;">
+        <legend><b>&nbsp;Notícia Resumida&nbsp;</b></legend>
+        <div id="invalidNoticiaResumida" style="padding-top: 12px; padding-left: 10px; padding-right: 10px;
+            float: left; color: red; display: none;">
+            * Campo Obrigatório
+        </div>
+        @Html.TextAreaFor(x => x.Resumo, new { @id = "txtResumo", @style = "width:900px; height:100px;", @class = "caixaTextoPortal", @maxlength = "300", @onkeyup = "countCaracter('#txtResumo', '#counterResumo');" })
+        <div id="counterResumo" style="text-align: left; font-size: 12px; color: #999999;
+            line-height: 12px;" title="300">
+            Restam 300 Caracteres.</div>
+    </fieldset>
+    <br />
+    <fieldset style="border: 1px solid gainsboro; padding: 10px;">
+        <legend><b>&nbsp;Notícia Detalhada&nbsp;</b></legend>
+        <div id="invalidNoticiaDetalhada" style="padding-top: 12px; padding-left: 10px; padding-right: 10px;
+            float: left; color: red; display: none;">
+            * Campo Obrigatório
+        </div>
+        @Html.TextAreaFor(x => x.Conteudo, new { @id = "txtConteudo", @style = "width:900px; height:100px;", @class = "caixaTextoPortal" })
+    </fieldset>
+    <br />
+    <fieldset style="border: 1px solid gainsboro; padding: 10px;">
+        <legend>&nbsp;Relacionar Políticos:&nbsp;</legend>
+        <div style="font-size: 12px; color: #999999; line-height: 12px; float: left;">
+            <strong>É possível vincular políticos a esta nessa notícia, para que, os usuários que
+                acompanhem-o por email, possam recebê-la. </strong>
+        </div>
+        <br />
+        <div>
+            <div id="divValidation" style="display: none; color: red; margin-bottom: 10px;">
+            <br />
+            </div>
+            <br />
+            <table>
+                <tr>
+                    <td style="padding-top: 12px; padding-right: 10px; float: left;">
+                        Cargo:
+                    </td>
+                    <td style="width: 350px;">
+                        @Html.DropDownListFor(x => x.IdCargo, new SelectList(Model.ListaCargos, "IdCargo", "Nome"), "Selecione", new { @id = "ddlCargos", @style = "width:390px;", @class = "caixaTextoPortal", @onchange = "ddlCargos_change()" })
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 12px; padding-right: 10px; float: left;">
+                        Político:
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(x => x.IdPolitico, new SelectList(Model.ListaPoliticos, "IdPolitico", "Nome"), new { @id = "ddlPoliticos", @disabled = "disabled", @style = "width:390px;", @class = "caixaTextoPortal" })
+                    </td>
+                    <td style="padding-top: 5px; padding-left: 10px; float: left;">
+                        <button style="float: left; font-size: 20px; height: 30px; cursor: pointer; border-radius: 4px;
+                            width: 32px; background-color: #3081c8; color: white;" onclick="vincularPolitico();"
+                            type="button" id="btnVincular">
+                            +</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div id="dynamic">
+        </div>
+    </fieldset>
+    <br />
+}
+<button type="button" onclick="salvar();" style="float: right; height: 30px; cursor: pointer;
+    border-radius: 4px; width: 60px; margin-left: 5px; background-color: #3081c8;
+    color: white;">
+    Salvar</button>
+<button type="button" onclick="voltar();" style="float: right; height: 30px; cursor: pointer;
+    width: 60px; margin-left: 5px; border-radius: 4px; background-color: #3081c8;
+    color: white;">
+    Voltar</button>

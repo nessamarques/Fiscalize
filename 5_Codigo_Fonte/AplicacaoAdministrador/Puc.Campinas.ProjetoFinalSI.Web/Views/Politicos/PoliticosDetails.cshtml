@@ -1,0 +1,127 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.PoliticoModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(function ($) {
+        $("#txtDtNascimento").mask("99/99/9999");
+        $("#txtTelefone").mask("(99)9999-9999");
+        $("#txtFax").mask("(99)9999-9999");
+    });
+
+</script>
+<h4>
+    <a class="migalha_pao_inicio" href="@Url.Action("Index", "Home")"> Painel de controle </a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt="" /> </a>
+    <a class="migalha_pao_meio" href="@Url.Action("Index", "Politicos")"> Manutenção de políticos </a> 
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt="" /> </a>
+    <a class="migalha_pao_fim" href="#"> Detalhar político</a>
+</h4>
+@using (Html.BeginForm("Details", "Politicos", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{   
+    @Html.ValidationSummary(false);
+    @Html.Hidden("IdPolitico", Model.IdPolitico)    
+   
+    <fieldset style="margin:10px 0px 10px 0px;">
+    <legend><b>Detalhar político</b></legend>
+        <table>
+            <tr>
+                <td style="width: 100px;">
+                    <div style="border: 1px solid black; width: 80px; height: 100px;">
+                    @if (Model.Foto == null)
+                    {
+                        <img src="../../Content/images/sem_foto.png" style="width: 80px; height: 100px;"
+                            alt="Político" />
+                    }
+                    else
+                    {
+                        <img src="@Url.Action("GetImage", "Politicos", new { id = Model.IdPolitico })" alt="Product Image" 
+                      style="width: 80px; height: 100px;" />
+                    }
+                </div>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>@Html.Label("* Nome: ")</td>
+                            <td>@Html.TextBoxFor(x => x.Nome, new { @style = "width:390px;", @maxlength = "50", @class = "input_text", @disabled = "disabled" })</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.Label("* Sexo: ")</td>
+                            <td>@Html.DropDownListFor(x => x.Sexo, new SelectList(Model.ListSexos, "Sigla", "Descr"), "Selecione ...", new { @style = "width:200px;", @class = "select", @disabled = "disabled" })</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.Label("* Nascimento: ")</td>
+                            <td>@Html.TextBoxFor(x => x.DtNascimento, new { @id = "txtDtNascimento", @style = "width:200px; text-transform:uppercase;", @class = "input_text", @disabled = "disabled" })</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.Label("* Escolaridade: ")</td>
+                            <td>@Html.DropDownListFor(x => x.IdEscolaridade, new SelectList(Model.ListEscolaridade, "IdEscolaridade", "Nome"), "Selecione ...", new { @style = "width:300px;", @id = "ddlEscolaridade", @class = "select", @disabled = "disabled" })</td>
+                        </tr>
+                        <tr>
+                            <td>@Html.Label("Foto: ")</td>
+                            <td><input type="file" name="file"/></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <fieldset style="margin:10px 0px 10px 0px;">
+            <legend><b>Naturalidade</b></legend>
+            <br />
+            <table>
+                <tr>
+                    <td>@Html.Label("* Pais: ")</td>
+                    <td style="width:140px;">@Html.DropDownListFor(x => x.IdPaisNaturalidade, new SelectList(Model.ListPais, "IdPais", "Nome"), new { @readonly = "readonly", @class = "select", @disabled = "disabled" })</td>
+                    <td>@Html.Label("* Estado: ")</td>
+                    <td>@Html.DropDownListFor(x => x.IdEstadoNaturalidade, new SelectList(Model.ListEstado, "IdEstado", "Sigla"), "Selecione ...", new { @id = "ddlEstado", @class = "select", @disabled = "disabled" })</td>
+                </tr>
+                <tr>
+                    <td>@Html.Label("* Cidade: ")</td>
+                    <td colspan="3">@Html.DropDownListFor(x => x.IdCidadeNaturalidade, new SelectList(Model.ListCidade, "IdCidade", "Nome"), "Selecione ...", new { @style = "width:300px;", @id = "ddlCidade", @class = "select", @disabled = "disabled" })</td>
+                </tr>
+            </table>
+        </fieldset>
+   
+        <fieldset style="margin:10px 0px 10px 0px;">
+            <legend><b>Contato</b></legend>
+            <br />
+            <table>
+                <tr>
+                    <td>@Html.Label("* E-mail: ")</td>
+                    <td>@Html.TextBoxFor(x => x.Email, new { @style = "width:450px;", @class = "input_text", @disabled = "disabled" })</td>
+                </tr>
+            </table>
+        </fieldset>
+
+        <div id="botoesInferiores" align="right">
+        <br />
+            <table>
+                <tr>
+                    <td>
+                        <a class="bt_blue" href="#" onclick="location.href='@Url.Action("Index", "Politicos")'">
+                            <span class="bt_blue_lft"></span>
+                            <strong>Voltar</strong> 
+                            <span class="bt_blue_r"></span>
+                        </a>
+                    </td>
+                    <td>
+                        <span>&nbsp &nbsp</span>
+                    </td>
+                    <td>
+                        <a class="bt_blue" href="#" onclick="$('#frmCreatePoliticos').submit();">
+                            <span class="bt_blue_lft"></span>
+                            <strong>Salvar</strong>
+                            <span class="bt_blue_r"></span>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </fieldset>
+}

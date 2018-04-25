@@ -1,0 +1,321 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.PortalPoliticosModel
+@{
+    ViewBag.Title = "Ranking";
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        if ('@Model.TipoRanking' != null && '@Model.TipoRanking' != '') {
+            selectRanking('@Model.TipoRanking');
+        }
+    });
+
+    function selectRanking(tipo) {
+
+        if (tipo != '') {
+            $('#TipoRanking').val(tipo);
+        }
+
+        if (tipo == 'gastosPoliticos') {
+            $('#divGastosPoliticos').css('border', '5px solid #CC0066');
+            $('#divAssiduidade').css('border', '5px solid gainsboro');
+
+        }
+        else if (tipo == 'assiduidade') {
+            $('#divAssiduidade').css('border', '5px solid #CC0066');
+            $('#divGastosPoliticos').css('border', '5px solid gainsboro');
+        }
+    }
+
+    function gerarRanking() {
+
+        if ($('#TipoRanking').val() != '') {
+            if ($('#ddlCargos').val() != '') {
+                $('#validation').hide();
+                $('#frmRanking').submit();
+            }
+            else {
+                $('#validation').html("É necessário selecionar o Cargo desejado.");
+                $('#validation').show('slow');
+            }
+        }
+        else {
+            $('#validation').html("É necessário selecionar o Tipo de Ranking desejado.");
+            $('#validation').show('slow');
+        }
+    }
+
+</script>
+@using (Html.BeginForm("ObterPoliticosRanking", "PortalRanking", FormMethod.Post, new { id = "frmRanking" }))
+{ 
+    @Html.Hidden("TipoRanking", Model.TipoRanking)
+    <h3 style="background: none repeat scroll 0 0 #CC0066;">
+        Fiscalize seus Representantes através de nosso Ranking</h3>
+    <fieldset style="border: 1px solid gainsboro; padding: 10px 10px 10px 10px; width: 97%;">
+        <legend>&nbsp;<b>Fiscalize seu político:</b>&nbsp;</legend>Através de nossa funcionalidade
+        de Ranking, é possível obter e comparar informações de todos os políticos que estão
+        exercendo suas atividades no momento e que possuam um mandato ativo. Com ele, você
+        pode, de maneira simples e rápida, checar que representante está gastando mais,
+        ou faltando muito em seus compromissos, entre outros.
+        <br />
+        <br />
+        <div style="text-align: center;">
+            <b>Siga os passos abaixo para gerar o ranking, da forma que você deseja!</b></div>
+        <br />
+        <div id="validation" style="color: Red; font-weight: bold; display: none;">
+        </div>
+        <br />
+        <b>1. Selecione o tipo de Ranking que você deseja gerar:</b>
+        <br />
+        <br />
+        <div id="divGastosPoliticos" style="border: 5px solid gainsboro; margin: 20px 20px 20px 20px;
+            width: 200px; float: left; text-align: center; padding: 10px; border-radius: 15px;
+            cursor: pointer;" onclick="selectRanking('gastosPoliticos');">
+            <div style="background-color: White; border-radius: 5px; margin: 2px 2px 2px 2px;">
+                <br />
+                <b>Despesas</b>
+                <br />
+                <img src="../../Content/portal/img/despesas.jpg" alt="Despesas" width="100" height="100" />
+            </div>
+        </div>
+        <div id="divAssiduidade" style="border: 5px solid gainsboro; margin: 20px 20px 20px 20px;
+            width: 200px; float: left; text-align: center; padding: 10px; border-radius: 15px;
+            cursor: pointer;" onclick="selectRanking('assiduidade');">
+            <div style="background-color: White; border-radius: 5px; margin: 2px 2px 2px 2px;">
+                <br />
+                <b>Votações e presenças</b>
+                <br />
+                <img src="../../Content/portal/img/meeting.png" alt="Votações e presenças" width="100"
+                    height="100" />
+            </div>
+        </div>
+        <br />
+        <div style="margin-top: 200px;">
+            <b>2. Selecione o cargo dos políticos que você deseja:</b>
+            <br />
+            <br />
+            <form id="Form">
+            <table>
+                <tr>
+                    <td style="line-height: 29px;">
+                        Cargo:
+                    </td>
+                    <td style="width: 350px;">
+                        @Html.DropDownListFor(x => x.IdCargo, new SelectList(Model.ListaCargos, "IdCargo", "Nome"), "Selecione", new { @id = "ddlCargos", @style = "width:390px;" })
+                    </td>
+                </tr>
+            </table>
+            </form>
+        </div>
+        <br />
+        <br />
+        <b>3. Selecione a opção 'Gerar Ranking' e aguarde o processamento.</b>
+        <br />
+        <br />
+        <button style="float: left; height: 30px; cursor: pointer; width: 130px; margin-left: 5px;
+            border-radius: 4px; background-color: #CC0066; color: white;" onclick="gerarRanking();"
+            type="button">
+            Gerar Ranking</button>
+        <br />
+        <br />
+        <br />
+        <div id="ranking">
+            @if (Model.RankingDespesas.Count > 0)
+            {
+                for (int x = 0; x < Model.RankingDespesas.Count; x++)
+                {
+
+                    string posicao = x + 1 + "º";
+                <div style="padding: 10px; border: 1px solid gainsboro; border-radius: 5px; width: 97%;
+                    height: 100px;">
+                    <table>
+                        <tr>
+                            <td style="padding-top: 40px; padding-left: 10px; width: 50px; text-align: center;">
+                                <div style="border: 1px solid #CC0066; border-radius: 100px; width: 25px; text-align: center;
+                                    height: 22px; background-color: #CC0066; color: white; padding-top: 3px; font-weight: bold;">
+                                    @posicao<div>
+                            </td>
+                            <td style="width: 100px;">
+                                <div style="border: 1px solid gainsboro; border-radius: 2px; width: 80px; height: 100px;">
+                                    @if (Model.RankingDespesas[x].Politico.Foto == null)
+                                    {
+                                        <img src="../../Content/images/sem_foto.png" style="width: 80px; height: 100px;"
+                                            alt="Político" />
+                                    }
+                                    else
+                                    {
+                                        <img src="@Url.Action("GetImage", "Politicos", new { id = Model.RankingDespesas[x].Politico.IdPolitico })" alt="Product Image" 
+                                        style="width: 80px; height: 100px;" />
+                                    }
+                                </div>
+                            </td>
+                            <td style="width: 480px;">
+                                <div style="text-align: center;">
+                                    <b>@Model.RankingDespesas[x].Politico.Nome</b><br />
+                                </div>
+                                <br />
+                                <table>
+                                    <tr>
+                                        <td style="width: 120px; height: 25px;">
+                                            <b>Cargo:</b>
+                                        </td>
+                                        <td>
+                                            @Model.RankingDespesas[x].Politico.MandatoAtual.Cargo
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 120px; height: 25px;">
+                                            <b>Partido:</b>
+                                        </td>
+                                        <td>
+                                            @Model.RankingDespesas[x].Politico.MandatoAtual.Partido
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 120px; height: 25px;">
+                                            <b>Mandato:</b>
+                                        </td>
+                                        <td>
+                                            @Model.RankingDespesas[x].Politico.MandatoAtual.PeriodoMandato.DtInicio.ToShortDateString()
+                                            - @Model.RankingDespesas[x].Politico.MandatoAtual.PeriodoMandato.DtFim.ToShortDateString()
+                                            -
+                                            @{
+                                         if (Model.RankingDespesas[x].Politico.MandatoAtual.PeriodoMandato.DtFim > DateTime.Now)
+                                         {
+                                                <text> <font color="green">(Ativo)</font>
+                                                </text>
+                                         }
+                                         else
+                                         {
+                                                <text> <font color="red">(Inativo)</font>
+                                                </text>
+                                         }
+                                            }
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <b>Total de despesas no mandato:</b><br />
+                                <br />
+                                <div style="text-align: left; font-size: 30px; color: red;">
+                                    <b>@String.Format("{0:C}", @Model.RankingDespesas[x].Valor)</b></div>
+                                <br />
+                                Veja os Detalhes das Despesas <a style="color:Black;" href="@Url.Action("RedirectRanking", "PortalDespesas", new { id = @Model.RankingDespesas[x].Politico.IdPolitico })">
+                                    Aqui</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <br />
+                }
+            }
+            @if (Model.RankingPresencas.Count > 0)
+            {
+                for (int x = 0; x < Model.RankingPresencas.Count; x++)
+                {
+
+                    string posicao = x + 1 + "º";
+                <div style="padding: 10px; border: 1px solid gainsboro; border-radius: 5px; width: 97%;
+                    height: 100px;">
+                    <table>
+                        <tr>
+                            <td style="padding-top: 40px; padding-left: 10px; width: 50px; text-align: center;">
+                                <div style="border: 1px solid #CC0066; border-radius: 100px; width: 25px; text-align: center;
+                                    height: 22px; background-color: #CC0066; color: white; padding-top: 3px; font-weight: bold;">
+                                    @posicao<div>
+                            </td>
+                            <td style="width: 100px;">
+                                <div style="border: 1px solid gainsboro; border-radius: 2px; width: 80px; height: 100px;">
+                                    @if (Model.RankingPresencas[x].Politico.Foto == null)
+                                    {
+                                        <img src="../../Content/images/sem_foto.png" style="width: 80px; height: 100px;"
+                                            alt="Político" />
+                                    }
+                                    else
+                                    {
+                                        <img src="@Url.Action("GetImage", "Politicos", new { id = Model.RankingPresencas[x].Politico.IdPolitico })" alt="Product Image" 
+                                        style="width: 80px; height: 100px;" />
+                                    }
+                                </div>
+                            </td>
+                            <td style="width: 480px;">
+                                <div style="text-align: center;">
+                                    <b>@Model.RankingPresencas[x].Politico.Nome</b><br />
+                                </div>
+                                <br />
+                                <table>
+                                    <tr>
+                                        <td style="width: 120px; height: 25px;">
+                                            <b>Cargo:</b>
+                                        </td>
+                                        <td>
+                                            @Model.RankingPresencas[x].Politico.MandatoAtual.Cargo
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 120px; height: 25px;">
+                                            <b>Partido:</b>
+                                        </td>
+                                        <td>
+                                            @Model.RankingPresencas[x].Politico.MandatoAtual.Partido
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 120px; height: 25px;">
+                                            <b>Mandato:</b>
+                                        </td>
+                                        <td>
+                                            @Model.RankingPresencas[x].Politico.MandatoAtual.PeriodoMandato.DtInicio.ToShortDateString()
+                                            - @Model.RankingPresencas[x].Politico.MandatoAtual.PeriodoMandato.DtFim.ToShortDateString()
+                                            -
+                                            @{
+                                         if (Model.RankingPresencas[x].Politico.MandatoAtual.PeriodoMandato.DtFim > DateTime.Now)
+                                         {
+                                                <text> <font color="green">(Ativo)</font>
+                                                </text>
+                                         }
+                                         else
+                                         {
+                                                <text> <font color="red">(Inativo)</font>
+                                                </text>
+                                         }
+                                            }
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style="height: 440px;">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <b>Total de Faltas em Sessões durante o </b><br />
+                                            <center><b><font color="Green">Mandato ATUAL</font></b></center>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-left: 120px; padding-top: 20px;">
+                                            <div style="text-align: left; font-size: 30px; color: red;">
+                                                <b>@Model.RankingPresencas[x].NroFaltas</b></div>
+                                            <br />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <a href="#" style="color:Black; padding-top: 1px; width:150px; text-align:center;">
+                                            <center>Confira os detalhes na Aba Plenário</center></a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <br />
+                }
+            }
+        </div>
+    </fieldset>
+}

@@ -1,0 +1,30 @@
+.pg-ctrl
+{
+	font:16px verdana;
+	color: #52bfea;
+	text-decoration: none; 
+	cursor: pointer;    
+	padding:4px;
+	margin:0px;
+	border: 0px;
+}
+.pg-normal 
+{
+	padding: 2px 5px 2px 5px;
+    margin-right: 2px;
+    border: 1px solid #52bfea;
+    text-decoration: none; 
+    color: #52bfea;
+    cursor:pointer;
+}
+
+.pg-selected 
+{
+	padding: 2px 5px 2px 5px;
+    margin-right: 2px;
+    border: 1px solid #52bfea;
+    font-weight: bold;
+    background-color: #52bfea;
+    color: #FFF;
+    cursor:pointer;
+}

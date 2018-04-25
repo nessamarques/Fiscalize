@@ -1,0 +1,172 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.MembroComissaoModel
+@{
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<script type="text/javascript">
+</script>
+<h3 style="background: none repeat scroll 0 0 #30b6c9;">
+    Membros da Comissão</h3>
+<fieldset style="border: 1px solid gainsboro; border-radius: 10px; padding: 10px 10px 10px 10px;">
+    <h2 style="font-size: medium; text-align: center;">@Model.NomeComissao</h2>
+    <br />
+    <table style="margin-left: 20px;">
+        <tr style="height: 25px;">
+            <td style="width: 150px;">
+                <b>Presidente: </b>
+            </td>
+            <td>
+                @Model.NomePresidente
+            </td>
+        </tr>
+        <tr style="height: 25px;">
+            <td style="width: 150px;">
+                <b>1º Vice-presidente: </b>
+            </td>
+            <td>
+                @Model.VicePresidente1
+            </td>
+        </tr>
+        <tr style="height: 25px;">
+            <td style="width: 150px;">
+                <b>2º Vice-presidente: </b>
+            </td>
+            <td>
+                @Model.VicePresidente2
+            </td>
+        </tr>
+        <tr style="height: 25px;">
+            <td style="width: 150px;">
+                <b>3º Vice-presidente: </b>
+            </td>
+            <td>
+                @Model.VicePresidente3
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table style="margin-left: 20px;">
+        <tr style="height: 25px;">
+            <td style="width: 150px;">
+                <b>Secretário(a): </b>
+            </td>
+            <td>
+                @Model.Secretario
+            </td>
+        </tr>
+        <tr style="height: 25px;">
+            <td style="width: 150px;">
+                <b>Local: </b>
+            </td>
+            <td>
+                @Model.Local
+            </td>
+        </tr>
+        <tr style="height: 25px;">
+            <td style="width: 150px;">
+                <b>Telefone: </b>
+            </td>
+            <td>
+                @if (@Model.Telefone != null)
+                { 
+                    <text> (@Model.Telefone.Substring(0, 2)) @Model.Telefone.Substring(2, 4)
+                    - @Model.Telefone.Substring(6)
+                    </text>
+                }
+            </td>
+        </tr>
+        <tr style="height: 25px;">
+            <td style="width: 150px;">
+                <b>Fax: </b>
+            </td>
+            <td>
+                @if (@Model.Fax != null)
+                { 
+                    <text> (@Model.Fax.Substring(0, 2)) @Model.Fax.Substring(2, 4)
+                    - @Model.Fax.Substring(6)
+                    </text>
+                }
+            </td>
+        </tr>
+    </table>
+
+    <table style="margin: 20px 20px 20px 20px; float:left;">
+        <tr style="color: white; background-color: #30b6c9; font-size: 15px; font-weight: 500;
+            padding-left: 20px; line-height: 28px; border: 1px solid gainsboro;">
+            <td colspan="3">
+                <center>
+                    <b>TITULARES</b></center>
+            </td>
+        </tr>
+        <tr style="border: 1px solid gainsboro; font-size: 12px; padding: 5px 2px 5px 2px;
+            background-color: gainsboro;">
+            <td style="width: 220px; padding: 5px 2px 5px 2px;">
+                <center>
+                    <b>Nome</b></center>
+            </td>
+            <td style="width: 120px; padding: 5px 2px 5px 2px;">
+                <center>
+                    <b>Cargo</b></center>
+            </td>
+            <td style="width: 60px; padding: 5px 2px 5px 2px;">
+                <center>
+                    <b>Partido</b></center>
+            </td>
+        </tr>
+        @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.MembroComissao item in @Model.listaTitulares)
+        {
+            <tr style="border: 1px solid gainsboro; font-size: 11px;">
+                <td style="width: 220px; padding: 5px 2px 5px 10px;">
+                    <a style="color:Black;" href="@Url.Action("Index", "PortalPoliticos", new { idPolitico = item.IdPolitico, nomePolitico = item.NomePolitico })">@item.NomePolitico</a>
+                </td>
+                <td style="width: 120px; padding: 5px 2px 5px 2px;">
+                    <center>@item.NomeCargo</center>
+                </td>
+                <td style="width: 60px; padding: 5px 2px 5px 2px;">
+                    <center>@item.Partido</center>
+                </td>
+            </tr>
+        }
+    </table>
+    <table style="margin: 20px 20px 20px 20px; float:right;">
+        <tr style="color: white; background-color: #30b6c9; font-size: 15px; font-weight: 500;
+            padding-left: 20px; line-height: 28px; border: 1px solid gainsboro;">
+            <td colspan="3">
+                <center>
+                    <b>SUPLENTES</b></center>
+            </td>
+        </tr>
+        <tr style="border: 1px solid gainsboro; font-size: 12px; background-color: #CCCCCC">
+            <td style="width: 220px; padding: 5px 2px 5px 2px;">
+                <center>
+                    <b>Nome</b></center>
+            </td>
+            <td style="width: 120px; padding: 5px 2px 5px 2px;">
+                <center>
+                    <b>Cargo</b></center>
+            </td>
+            <td style="width: 60px; padding: 5px 2px 5px 2px;">
+                <center>
+                    <b>Partido</b></center>
+            </td>
+        </tr>
+        @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.MembroComissao item in Model.listaSuplentes)
+        {
+            <tr style="border: 1px solid gainsboro; font-size: 11px;">
+                <td style="width: 220px; padding: 5px 2px 5px 10px;">
+                    <a style="color:Black;" href="@Url.Action("Index", "PortalPoliticos", new { idPolitico = item.IdPolitico, nomePolitico = item.NomePolitico })">@item.NomePolitico</a>
+                </td>
+                <td style="width: 120px; padding: 5px 2px 5px 2px;">
+                    <center>@item.NomeCargo</center>
+                </td>
+                <td style="width: 60px; padding: 5px 2px 5px 2px;">
+                    <center>@item.Partido</center>
+                </td>
+            </tr>
+        }
+    </table>
+</fieldset>
+<br />
+<button style="float: right; height: 30px; cursor: pointer; width: 70px; margin-left: 5px;
+    border-radius: 4px; background-color: #30b6c9; color: white;" onclick="location.href='@Url.Action("Index","PortalComissoes")'"
+    type="button">
+    Voltar</button>

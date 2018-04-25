@@ -1,0 +1,98 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.NoticiaModel
+@{
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<style type="text/css">
+    .divsAddNoticia
+    {
+        margin: 5px;
+        border: 1px solid gray;
+        cursor: pointer;
+    }
+    .divsAddNoticia:hover
+    {
+        background: #3081c8;
+    }
+    .divAddNoticiaAreaSelecionada
+    {
+        display: none;
+        margin-top: 220px;
+        text-align: center;
+    }
+</style>
+<script type="text/javascript">
+
+    function manterNoticia(area) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Content("~/PortalNoticias/ManterNoticiasByArea")',
+            data: { areaSelecionada: area },
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data != '') {
+                
+                    $('#divManutencaoNoticias').html(data);
+                    $('#divManutencaoNoticias').show();
+                }
+            }
+        });
+    }
+
+    function selectAreaSite(id) {
+
+        $('#' + 1).css('background', 'white');
+        $('#' + 2).css('background', 'white');
+        $('#' + 3).css('background', 'white');
+        
+        $('#' + id).css('background', '#3081c8');
+
+        manterNoticia(id);
+    }
+
+    $(document).ready(function () {
+        
+        @{
+        if(Model != null)
+        {
+            if(Model.AreaSelecionada != null)
+            {
+                <text>
+                    selectAreaSite('@Model.AreaSelecionada');
+                </text>
+            }
+        }
+        }
+
+    });
+
+</script>
+<h3 style="background: none repeat scroll 0 0 #3081c8;">
+    Manutenção de Notícias</h3>
+<div id="chooseArea">
+    <h4 style="text-align: center;">
+        Selecione abaixo o local do Portal Fiscalize que vc deseja realizar Manutenção de
+        Notícias</h4>
+    <div>
+        <div>
+            <br />
+            <div>
+                <br />
+                <div style="float: left; border: 1px solid gray; width: 300px; height: 175px; margin: auto auto auto 330px">
+                    <div style="width: 288px; height: 50px;" class="divsAddNoticia" id="1" onclick="selectAreaSite(1);">
+                    </div>
+                    <div style="float: left; width: 80px; height: 100px;" id="2" class="divsAddNoticia"
+                        onclick="selectAreaSite(2);">
+                    </div>
+                    <div style="float: left; width: 195px; height: 100px;" id="3" class="divsAddNoticia"
+                        onclick="selectAreaSite(3);">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br /><br />
+<div id="divManutencaoNoticias" style="margin-top:200px;">
+</div>
+@Html.Hidden("SelectedArea")

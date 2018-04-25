@@ -1,0 +1,345 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.PortalPoliticosModel
+@{
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<script type="text/javascript">
+
+
+    function obterBiografia(idPolitico) {
+
+        $.ajax({
+            type: "GET",
+            url: "GetBiografiaPolitico",
+            data:
+                {
+                    idPolitico: idPolitico
+                },
+            success: function (data) {
+                if (data != '[object XMLDocument]') {
+                    $('#divPoliticos').html(data);
+                    $('#divPoliticos').show('slow');
+                    $('#div1').hide();
+                }
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        if ('@Model.ObterBiografiaIDPolitico' != 0 && '@Model.ObterBiografiaIDPolitico' != null) {
+            obterBiografia('@Model.ObterBiografiaIDPolitico');
+            $('#hdnPoliticoSelecionado').val('@Model.ObterBiografiaIDPolitico');
+            $('#txtPolitico').val('@Model.ObterBiografiaNomePolitico');
+        }
+
+        $("#ddlCargos").val('');
+        $("#ddlPoliticos").html('');
+        $("#ddlPoliticos").attr('disabled', 'disabled');
+        $("#ddlCidades").attr('disabled', 'disabled');
+        $('#fdsOpcoesPesquisa').coolfieldset();
+        $('#fdsOpcoesPesquisaNome').coolfieldset();
+
+        $("#txtPolitico").autocomplete
+        ({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("ObterPoliticosMandatosAtivosByStringNome", "PortalPoliticos")', type: "GET", dataType: "json",
+                    data: { searchTerm: request.term, maxResults: 5 },
+                    minLength: 3,
+                    success: function (data) {
+
+                        if (data != '') {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.Nome,
+                                    value: item.Nome,
+                                    id: item.IdPolitico
+                                }
+                            }))
+                        }
+                        else {
+                            $('#hdnPoliticoSelecionado').val('');
+                        }
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#hdnPoliticoSelecionado').val(ui.item.id);
+            }
+        });
+
+    });
+
+    function filtrarCidadesCombo() {
+        if ($("#ddlEstados").val() != '') {
+            $.ajax({
+                type: "GET",
+                url: "ObterCidadesByIdEstado",
+                data:
+            {
+                idEstado: $("#ddlEstados").val()
+            },
+                dataType: "json",
+                success: function (data) {
+                    if (data != '') {
+
+                        $("#ddlCidades").html('');
+
+                        $("#ddlCidades").append("<option value='Selecione'>Selecione</option>");
+
+                        $.each(data, function (i, item) {
+                            $("#ddlCidades").append("<option value='" + data[i].IdCidade + "'>" + data[i].Nome + "</option>");
+                        })
+
+                        $("#ddlCidades").removeAttr('disabled');
+                    }
+                    else {
+                        $("#ddlCidades").html('');
+                        $("#ddlCidades").attr('disabled', 'disabled');
+                    }
+                }
+            });
+        }
+        else {
+            $("#ddlCidades").html('');
+            $("#ddlCidades").attr('disabled', 'disabled');
+        }
+    }
+
+    function pesquisarPoliticos() {
+
+        var isValid = true;
+        var message = '';
+        var idPolitico = $("#ddlPoliticos").val();
+
+        if ($("#ddlEstados").val() == '' || $("#ddlEstados").val() == 'Selecione') {
+            isValid = false;
+            message = 'É necessário selecionar o Estado da candidatura.';
+        }
+        else if ($("#ddlCidades").val() == '' || $("#ddlCidades").val() == 'Selecione') {
+            isValid = false;
+            message = 'É necessário selecionar a Cidade da candidatura.';
+        }
+
+        if ($('#hdnPoliticoSelecionado').val() != '') {
+            isValid = true;
+            idPolitico = $('#hdnPoliticoSelecionado').val();
+        }
+
+        if (isValid) {
+            $('#divValidation').html('');
+            $('#divValidation').hide('slow');
+
+            $.ajax({
+                type: "GET",
+                url: "ObterPoliticosByFiltroUsuario",
+                data:
+                {
+                    idEstado: $("#ddlEstados").val(),
+                    idCidade: $("#ddlCidades").val(),
+                    idCargo: $("#ddlCargos").val(),
+                    idPartido: $("#ddlPartidos").val(),
+                    idPolitico: idPolitico
+                },
+                success: function (data) {
+                    if (data != '[object XMLDocument]') {
+                        $('#div1').show();
+                        $('#divPoliticos').html(data);
+                        $('#divPoliticos').show('slow');
+                        $('#divValidation').hide();
+                    }
+                    else {
+                        $('#divPoliticos').html('');
+                        $('#divValidation').show('slow');
+                        message = 'Não foram encontrados políticos ativos com os parâmetros especificados.';
+                        $('#divValidation').html(message);
+                    }
+                }
+            });
+        }
+        else {
+            $('#divValidation').html(message);
+            $('#divValidation').show('slow');
+        }
+    }
+
+    function filtrarPoliticosCombo() {
+        $.ajax({
+            type: "GET",
+            url: "ObterPoliticosAtivosByIdCargo",
+            data: {
+                idCargo: $("#ddlCargos").val()
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data != '') {
+
+                    $("#ddlPoliticos").html('');
+
+                    $("#ddlPoliticos").append("<option value='Selecione'>Selecione</option>");
+
+                    $.each(data, function (i, item) {
+                        $("#ddlPoliticos").append("<option value='" + data[i].IdPolitico + "'>" + data[i].Nome + "</option>");
+                    })
+
+                    $("#ddlPoliticos").removeAttr('disabled');
+                }
+                else {
+                    $("#ddlPoliticos").html('');
+                    $("#ddlPoliticos").attr('disabled', 'disabled');
+                }
+            }
+        });
+    }
+
+    function obterPoliticosByCargoPartido() {
+
+        if ($("#ddlEstados").val() != '' && $("#ddlCidades").val() != '') {
+
+            $.ajax({
+                type: "GET",
+                url: "ObterPoliticosAtivosByCargoPartido",
+                data: {
+                    idEstado: $("#ddlEstados").val(),
+                    idCidade: $("#ddlCidades").val(),
+                    idCargo: $("#ddlCargos").val(),
+                    idPartido: $("#ddlPartidos").val()
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data != '') {
+
+                        $("#ddlPoliticos").html('');
+
+                        $("#ddlPoliticos").append("<option value='Selecione'>Selecione</option>");
+
+                        $.each(data, function (i, item) {
+                            $("#ddlPoliticos").append("<option value='" + data[i].IdPolitico + "'>" + data[i].Nome + "</option>");
+                        })
+
+                        $("#ddlPoliticos").removeAttr('disabled');
+                    }
+                    else {
+                        $("#ddlPoliticos").html('');
+                        $("#ddlPoliticos").attr('disabled', 'disabled');
+                    }
+                }
+            });
+        }
+        else {
+            $("#ddlPoliticos").html('');
+            $("#ddlPoliticos").attr('disabled', 'disabled');
+        }
+    }
+
+    function txtPolitico_Click() {
+
+        $('#hdnPoliticoSelecionado').val('');
+        $('#txtPolitico').val('');
+    }
+   
+</script>
+<h3 style="background: none repeat scroll 0 0 #8CBD20;">
+    Políticos
+</h3>
+Conheça um pouco mais sobre os seus representantes, pesquisando aqui suas informações
+pessoais, históricos de mandatos, partidos, atividades parlamentares e também acompanhando
+suas atividades, adicionando-o à sua lista acompanhamento de políticos que permite
+que você receba notícias dos políticos selecionados em seu email.
+<br />
+<br />
+<fieldset style="border: 1px solid gainsboro; padding: 10px 10px 10px 10px; width: 97%;">
+    <legend>&nbsp;<b>Consulte as informações do político desejado:</b>&nbsp;</legend>
+    <div id="divValidation" style="display: none; font-weight: bold; color: red; margin-bottom: 10px;">
+    </div>
+    <form id="Form" action="#">
+    <div class="wrapper">
+    </div>
+    <fieldset style="width: 910px; padding: 8px; margin: 10px 0px 10px 0px;" id="fdsOpcoesPesquisaNome"
+        class="coolfieldset">
+        <legend>&nbsp;Pesquisa por nome:&nbsp;</legend>
+        <div>
+            * Nome:
+            @Html.TextBoxFor(x => x.NomePolitico, new { @id = "txtPolitico", @style = "width:63%; border:1px solid gainsboro; height:22px;", @onclick = "txtPolitico_Click()" })
+        </div>
+    </fieldset>
+    <fieldset style="width: 910px; padding: 8px;" id="fdsOpcoesPesquisa" class="coolfieldset">
+        <legend>&nbsp;Pesquisa por dados do político:&nbsp;</legend>
+        <div>
+            <table>
+                <tr>
+                    <td style="width: 52px;">
+                        Estado:
+                    </td>
+                    <td style="width: 52px;">
+                        @Html.DropDownListFor(x => x.IdEstado, new SelectList(Model.ListaEstados, "IdEstado", "Sigla"), "Selecione", new { @id = "ddlEstados", @style = "width:100px;", @onchange = "filtrarCidadesCombo()" })
+                    </td>
+                    <td>
+                        &nbsp;&nbsp;&nbsp;Cidade:
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(x => x.IdCidade, new SelectList(Model.ListaCidades, "IdCidade", "Nome"), new { @id = "ddlCidades", @style = "width:345px;", @disabled = "disabled" })
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table>
+                <tr>
+                    <td>
+                        Cargo:
+                    </td>
+                    <td style="width: 350px;">
+                        @Html.DropDownListFor(x => x.IdCargo, new SelectList(Model.ListaCargos, "IdCargo", "Nome"), "Selecione", new { @id = "ddlCargos", @style = "width:390px;", @onchange = "obterPoliticosByCargoPartido();" })
+                    </td>
+                    <td>
+                        &nbsp;&nbsp;&nbsp;Partido:
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(x => x.IdPartido, new SelectList(Model.ListaPartidos, "IdPartido", "Sigla"), "Selecione", new { @id = "ddlPartidos", @style = "width:100px;", @onchange = "obterPoliticosByCargoPartido();" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Político:
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(x => x.IdPolitico, new SelectList(Model.ListaPoliticos, "IdPolitico", "Nome"), new { @id = "ddlPoliticos", @disabled = "disabled", @style = "width:390px;" })
+                    </td>
+                </tr>
+            </table>
+            <br />
+        </div>
+    </fieldset>
+    </form>
+    <br />
+    <button type="button" onclick="pesquisarPoliticos();" style="float: right; height: 30px;
+        cursor: pointer; width: 70px; margin-left: 5px; border-radius: 4px; background-color: #8CBD20;
+        color: white;">
+        Pesquisar
+    </button>
+    <br />
+    <br />
+    <div id="divMain">
+        @if (Model.UsuarioLogado != null)
+        {
+            <div id="div1" ondrop="drop(event)" ondragleave="$('#div1').css('background-color', 'white');"
+                ondragover="allowDrop(event)" ondrag style="border: 1px solid gainsboro; width: 47%;
+                height: auto; min-height: 140px; border-radius: 5px; float: right; background-color: white;
+                display: none;">
+                <div style="margin: 5px; text-align: center;">
+                    <h4>
+                        Arraste os políticos que você deseja acompanhar para esta área!</h4>
+                    <b>
+                        <h4 style="text-align: center;">
+                            Você está acompanhando:</h4>
+                    </b>
+                </div>
+                <div id="politicos" style="float: left; width: 100%; padding-top: 10px; padding-left: 10px;">
+                </div>
+            </div>
+        }
+        <div id="divPoliticos" style="margin: 10px;">
+        </div>
+    </div>
+</fieldset>
+@Html.Hidden("hdnPoliticoSelecionado")

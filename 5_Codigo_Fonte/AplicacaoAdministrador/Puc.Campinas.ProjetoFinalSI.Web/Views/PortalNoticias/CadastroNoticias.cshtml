@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<script type="text/javascript">
+
+    function incluirNoticia() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Content("~/PortalNoticias/IncluirNoticia")',
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data != '') {
+
+                    $('#incluirNoticia').html(data);
+                    $('#incluirNoticia').show();
+                }
+            }
+        });
+    }
+
+</script>
+
+<h3 style="background: none repeat scroll 0 0 #3081c8;">
+    Manutenção de Notícias</h3>
+<div id="btns" style="float: right;">
+    <button onclick="incluirNoticia()" style="margin-right:5px; float: left; height: 35px; cursor: pointer; background-color:#3081c8"
+        class="button3" type="button">
+        Inclusão</button>
+    <button onclick="pesquisarPoliticos()" style="float: left; height: 35px; cursor: pointer; background-color:#3081c8;"
+        class="button3" type="button">
+        Manutenção</button>
+</div>
+<br /><br />
+<div id="incluirNoticia">
+ </div>

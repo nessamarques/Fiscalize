@@ -1,0 +1,382 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.BiografiaModel
+@{
+    ViewBag.Title = "_PartialBiografiaPolitico";
+}
+<script language="javascript" type="text/javascript" src="../../Scripts/jquery.coolfieldset.js"></script>
+<link rel="stylesheet" href="../../Content/portal/css/reset.css" type="text/css" />
+<link rel="stylesheet" href="../../Content/portal/css/layout.css" type="text/css" />
+<link rel="stylesheet" href="../../Content/portal/css/style.css" type="text/css" />
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#fdsPosicaoAtual').coolfieldset({ animation: false });
+        $('#fdsInfoContato').coolfieldset({ animation: false });
+
+        $('#fdsHistoricoMandatos').coolfieldset({ animation: false });
+        $('#fdsHistoricoPartidos').coolfieldset({ animation: false });
+        $('#fdsHistoricoAtividades').coolfieldset({ animation: false });
+    });
+
+</script>
+<fieldset style="padding: 10px; height: 170px; border: 1px solid gainsboro;">
+    <legend><b>Informações Pessoais</b></legend>
+    <div>
+        <div style="border: 1px solid gainsboro; height: 130px; width: 100px; float: left;">
+            @if (Model.Politico.Foto == null)
+            {
+                <img src="../../Content/images/sem_foto.png" style="cursor: pointer; width: 80px;
+                    height: 100px;" alt="Político" />
+            }
+            else
+            {
+                <img src="@Url.Action("GetImage", "Politicos", new { id = Model.Politico.IdPolitico })" alt="Product Image" style="width: 100px; height: 130px; cursor:pointer;" />
+            }
+        </div>
+        <div style="width: 760px; height: 130px; float: right;">
+            <b>@Model.Politico.Nome</b>
+            <br />
+            <br />
+            <table>
+                <tr>
+                    <td style="width: 100px; height: 25px;">
+                        <b>Naturalidade:</b>
+                    </td>
+                    <td>
+                        @Model.Politico.CidadeNaturalidade.Nome , @Model.Politico.EstadoNaturalidade.Sigla
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 100px; height: 25px;">
+                        <b>Escolaridade:</b>
+                    </td>
+                    <td>
+                        @Model.Politico.Escolaridade.Nome
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 100px; height: 25px;">
+                        <b>Nascimento:</b>
+                    </td>
+                    <td>
+                        @Model.Politico.DtNascimento.ToShortDateString()
+                        (
+                        @{
+                            DateTime today = DateTime.Today;
+                            int age = today.Year - Model.Politico.DtNascimento.Year;
+                            if (Model.Politico.DtNascimento > today.AddYears(-age)) { age--; }
+                        }
+                        @age Anos )
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 100px; height: 25px;">
+                        <b>Filiação:</b>
+                    </td>
+                    <td>
+                        @if (Model.Politico.Filiacao.NomePai != null)
+                        {
+                            <text> @Model.Politico.Filiacao.NomePai e @Model.Politico.Filiacao.NomeMae
+                            </text>
+                        }
+                        else
+                        { 
+                            <text> N/D
+                            </text>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 100px; height: 25px;">
+                        <b>Profissões:</b>
+                    </td>
+                    <td>
+                        @if (Model.Politico.ListaProfissoes.Count > 0)
+                        {
+                            foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Profissao p in Model.Politico.ListaProfissoes)
+                            { 
+                            <text>@p.Nome &nbsp;</text>
+                            }
+                        }
+                        else
+                        { 
+                            <text> N/D
+                            </text>
+                        }
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</fieldset>
+<br />
+<fieldset style="padding: 10px;" id="fdsPosicaoAtual" class="coolfieldset">
+    <legend>Posição Atual</legend>
+    <div>
+        <table>
+            <tr>
+                <td style="width: 120px; height: 25px;">
+                    <b>Cargo:</b>
+                </td>
+                <td>
+                    @Model.Politico.MandatoAtual.Cargo
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 120px; height: 25px;">
+                    <b>Partido:</b>
+                </td>
+                <td>
+                    @Model.Politico.MandatoAtual.Partido
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 120px; height: 25px;">
+                    <b>Mandato:</b>
+                </td>
+                <td>
+                    @Model.Politico.MandatoAtual.PeriodoMandato.DtInicio.ToShortDateString() - @Model.Politico.MandatoAtual.PeriodoMandato.DtFim.ToShortDateString()
+                    -
+                    @{
+                        if (Model.Politico.MandatoAtual.PeriodoMandato.DtFim > DateTime.Now)
+                        {
+                        <text> <font color="green">(Ativo)</font>
+                        </text>
+                        }
+                        else
+                        {
+                        <text> <font color="red">(Inativo)</font>
+                        </text>
+                        }
+                    }
+                </td>
+            </tr>
+        </table>
+    </div>
+</fieldset>
+<br />
+<fieldset style="padding: 10px;" id="fdsInfoContato" class="coolfieldset">
+    <legend>Endereço e Contato</legend>
+    <div>
+        <table>
+            <tr>
+                <td style="width: 120px; height: 25px;">
+                    <b>Endereço:</b>
+                </td>
+                <td>
+                    @Model.Politico.MandatoAtual.Endereco, Gabinete @Model.Politico.MandatoAtual.Gabinete,
+                    Anexo @Model.Politico.MandatoAtual.Anexo, CEP: @Model.Politico.MandatoAtual.CEP
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 120px; height: 25px;">
+                    <b>Telefone / Fax:</b>
+                </td>
+                <td>
+                    @{
+                        if (Model.Politico.MandatoAtual.Telefone != null)
+                        {
+                        <text> (@Model.Politico.MandatoAtual.Telefone.Substring(0, 2)) @Model.Politico.MandatoAtual.Telefone.Substring(2, 4)
+                        - @Model.Politico.MandatoAtual.Telefone.Substring(6)
+                        </text>
+                        }
+
+                        if (Model.Politico.MandatoAtual.Fax != null)
+                        {
+                        <text> / (@Model.Politico.MandatoAtual.Fax.Substring(0, 2)) @Model.Politico.MandatoAtual.Fax.Substring(2, 4)
+                        - @Model.Politico.MandatoAtual.Fax.Substring(6)</text>
+                        }
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 120px; height: 25px;">
+                    <b>Email:</b>
+                </td>
+                <td>
+                    @Model.Politico.Email
+                </td>
+            </tr>
+            @{
+                if (Model.Politico.RedesSociais.Count > 0)
+                {
+                <tr>
+                    <td style="width: 120px; height: 25px;">
+                        <b>Redes Sociais:</b>
+                    </td>
+                    <td>
+                        @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.RedeSocial redeSocial in Model.Politico.RedesSociais)
+                        {
+                            string url = "'" + redeSocial.Endereco + "'";
+
+                            switch (redeSocial.IdTipoRedeSocial)
+                            {
+                                case 1: 
+                            <img src="../../Content/portal/img/ico_compartilhamento_fb.jpg" alt="Facebook" title="Facebook" style="cursor:pointer;" onclick="window.open(@Url.Content(url))" />
+                                                                                                                                                                            break;
+
+                                case 2:
+                            <img src="../../Content/portal/img/ico_compartilhamento_tw.jpg" alt="Twitter" title="Twitter" style="cursor:pointer;" onclick="window.open(@Url.Content(url))" />
+                                                                                                                                                                  break;
+
+                                case 4:
+                            <img src="../../Content/portal/img/ico_compartilhamento_mais.jpg" alt="Google+" title="Google+" style="cursor:pointer;"  onclick="window.open(@Url.Content(url))"/>
+                                                                                                                                                                     break;
+                            }
+                        }
+                    </td>
+                </tr>
+                }
+            }
+        </table>
+    </div>
+</fieldset>
+<br />
+<fieldset style="padding: 10px;" id="fdsHistoricoMandatos" class="coolfieldset">
+    <legend>Histórico de Mandatos</legend>
+    <div>
+        <table style="width: 890px; border-radius: 4px 4px 4px 4px; border-bottom: 1px solid gainsboro;
+            color: black; font-size: 13px; padding-left: 20px; line-height: 28px; margin-bottom: 5px;
+            font-weight: 600;">
+            <tr>
+                <td style="width: 400px; text-align: left;">
+                    Membro do Partido
+                </td>
+                <td style="width: 250px; text-align: left;">
+                    Cargo Ocupado no Mandato
+                </td>
+                <td style="width: 80px; text-align: center;">
+                    Início
+                </td>
+                <td style="width: 80px; text-align: center;">
+                    Término
+                </td>
+                <td style="width: 60px; text-align: center;">
+                    Ativo
+                </td>
+            </tr>
+        </table>
+        <table id="tbMandatos" style="width: 890px; font-size: 13px; font-weight: 500; padding-left: 20px;
+            line-height: 25px;">
+            @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Historico item in Model.HistoricoPolitico)
+            { 
+                <tr>
+                    <td style="width: 400px; text-align: left;">@item.Partido
+                    </td>
+                    <td style="width: 250px; text-align: left;">@item.Cargo
+                    </td>
+                    <td style="width: 80px; text-align: center;">@item.DataInicio.ToShortDateString()
+                    </td>
+                    <td style="width: 80px; text-align: center;">@item.DataTermino.ToShortDateString()
+                    </td>
+                    <td style="width: 60px; text-align: center;">
+                        @{
+                                                            if (item.Situacao)
+                                                            { 
+                            <img src="../../Content/img/bullet-green.png" alt="Notícia Ativa" title="Notícia Ativa" />
+                                                            }
+                                                            else
+                                                            {
+                            <img src="../../Content/img/bullet-grey.png" alt="Notícia Inativa" title="Notícia Inativa" /> 
+                                                            }    
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</fieldset>
+<br />
+<fieldset style="padding: 10px;" id="fdsHistoricoPartidos" class="coolfieldset">
+    <legend>Histórico de Partidos</legend>
+    <div>
+        <table style="width: 400px; border-radius: 4px 4px 4px 4px; border-bottom: 1px solid gainsboro;
+            color: black; font-size: 13px; padding-left: 20px; line-height: 28px; margin-bottom: 5px;
+            font-weight: 600;">
+            <tr>
+                <td style="width: 200px; text-align: left;">
+                    Partido
+                </td>
+                <td style="width: 60px; text-align: center;">
+                    Ativo
+                </td>
+            </tr>
+        </table>
+        <table style="width: 400px; font-size: 13px; font-weight: 500; padding-left: 20px;
+            line-height: 25px;">
+            @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Historico item in Model.HistoricoPolitico.GroupBy(cust => cust.Partido).Select(grp => grp.First()))
+            { 
+                <tr>
+                    <td style="width: 200px; text-align: left;">@item.Partido
+                    </td>
+                    <td style="width: 60px; text-align: center;">
+                        @{
+                                                           if (item.Situacao)
+                                                           { 
+                            <img src="../../Content/img/bullet-green.png" alt="Notícia Ativa" title="Notícia Ativa" />
+                                                           }
+                                                           else
+                                                           {
+                            <img src="../../Content/img/bullet-grey.png" alt="Notícia Inativa" title="Notícia Inativa" /> 
+                                                           }    
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</fieldset>
+<br />
+<fieldset style="padding: 10px;" id="fdsHistoricoAtividades" class="coolfieldset">
+    <legend>Atividades Parlamentares</legend>
+    <div>
+        <table style="width: 890px; border-radius: 4px 4px 4px 4px; border-bottom: 1px solid gainsboro;
+            color: black; font-size: 13px; padding-left: 20px; line-height: 28px; margin-bottom: 5px;
+            font-weight: 600;">
+            <tr>
+                <td style="width: 700px; text-align: left;">
+                    Comissão
+                </td>
+                <td style="width: 100px; text-align: left;">
+                    Situação
+                </td>
+                <td style="width: 80px; text-align: center;">
+                    Início
+                </td>
+                <td style="width: 80px; text-align: center;">
+                    Término
+                </td>
+            </tr>
+        </table>
+        <table id="tbMandatos" style="width: 890px; font-size: 13px; font-weight: 500; padding-left: 20px;
+            line-height: 25px;">
+            @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Atividade item in Model.HistoricoAtividades)
+            { 
+                <tr>
+                    <td style="width: 700px; text-align: left;">@item.NomeComissao
+                    </td>
+                    <td style="width: 100px; text-align: left;">
+                        @{
+                                                           if (item.IdSituacao.Equals(1))
+                                                           {
+                            <text>Titular</text>
+                                                           }
+                                                           else
+                                                           {
+                            <text>Suplente</text>
+                                                           }   
+                        }
+                    </td>
+                    <td style="width: 80px; text-align: center;">@item.DtInicio.ToShortDateString()
+                    </td>
+                    <td style="width: 80px; text-align: center;">@item.DtFim.ToShortDateString()
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</fieldset>
+<br />
+<button style="float: right; height: 30px; cursor: pointer; width: 70px; margin-left: 5px;
+    border-radius: 4px; background-color: #8CBD20; color: white;" onclick="pesquisarPoliticos();"
+    type="button">
+    Voltar</button>

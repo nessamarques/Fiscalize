@@ -1,0 +1,171 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.UsuarioModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(function ($) {
+        $("#txtCPF").mask("999.999.999-99");
+        $("#txtTelefone").mask("(99)9999-9999");
+        $("#txtCelular").mask("(99)9999-9999");
+
+        $('#txtPass')[0].type = 'password';
+        $('#txtPassConfirm')[0].type = 'password';
+
+    });
+
+    $(document).ready(function () {
+    
+        $("#ddlEstado").change(function () {
+            $.ajax({
+                type: "POST",
+                url: "ObterCidadesByIdEstado",
+                data: { idEstado: $("#ddlEstado").val() },
+                dataType: "json",
+                success: function (data) {
+                    if (data != '') {
+
+                        $("#ddlCidade").html('');
+
+                        $.each(data, function (i, item) {
+                            $("#ddlCidade").append("<option value='" + data[i].IdCidade + "'>" + data[i].Nome + "</option>");
+                        })
+
+                        $("#ddlCidade").removeAttr('disabled');
+                    }
+                    else {
+                        $("#ddlCidade").html('');
+                        $("#ddlCidade").attr('disabled', 'disabled');
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+<h4>
+    <a class="migalha_pao_inicio" href="@Url.Action("Index", "Home")"> Painel de controle</a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt="" /> </a>
+    <a class="migalha_pao_meio" href="@Url.Action("Index", "Usuarios")"> Manutenção de usuários</a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt="" /> </a>
+    <a class="migalha_pao_fim" href="#"> Alterar usuário</a>
+</h4>
+@using (Html.BeginForm("Edit", "Usuarios", FormMethod.Post, new { id = "frmEditUsuarios" }))
+{   
+    @Html.ValidationSummary(false);
+    @Html.Hidden("IdUsuario", Model.IdUsuario)    
+    
+    <div class="editor-label">
+        @Html.Label("* Nome: ")
+    </div>
+    <div class="editor-field">
+        @Html.TextBoxFor(x => x.Nome, new { @style = "width:100%;" })
+    </div>
+    <br />
+    <div class="editor-label">
+        @Html.Label("* CPF: ")
+    </div>
+    <div class="editor-field">
+        @Html.TextBoxFor(x => x.CPF, new { @style = "width:125px;", @id = "txtCPF" })
+    </div>
+    <br />
+    <table>
+        <tr>
+            <td>
+                <div class="editor-label">
+                    @Html.Label("* Estado: ")
+                </div>
+                <div class="editor-field">
+                    @Html.DropDownListFor(x => x.IdEstado, new SelectList(Model.ListaEstados, "IdEstado", "Nome"), "Selecione ...", new { @style = "width:125px;", @id = "ddlEstado" })
+                </div>
+            </td>
+            <td>
+                <div class="editor-label">
+                    @Html.Label("* Cidade: ")
+                </div>
+                <div class="editor-field">
+                    @Html.DropDownListFor(x => x.IdCidade, new SelectList(Model.ListaCidades, "IdCidade", "Nome"), "Selecione ...", new { @style = "width:500px;", @id = "ddlCidade" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table>
+        <tr>
+            <td>
+                <div class="editor-label">
+                    @Html.Label("* Telefone: ")
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(x => x.Telefone, new { @style = "width:120px;", @id = "txtTelefone" })
+                </div>
+            </td>
+            <td>
+                <div class="editor-label">
+                    @Html.Label("* Celular: ")
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(x => x.Celular, new { @style = "width:120px;", @id = "txtCelular" })
+                </div>
+            </td>
+            <td>
+                <div class="editor-label">
+                    @Html.Label("* E-mail: ")
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(x => x.Email, new { @style = "width:362px;" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div class="editor-label">
+        @Html.Label("* Login: ")
+    </div>
+    <div class="editor-field">
+        @Html.TextBoxFor(x => x.UsuarioLogin, new { @style = "width:252px;", @maxlength = "10" })
+    </div>
+    <br />
+    <div class="editor-label">
+        @Html.Label("* Senha: ")
+    </div>
+    <div class="editor-field">
+        @Html.TextBoxFor(x => x.Senha, new { @style = "width:252px;", @maxlength = "15", @id = "txtPass" })
+    </div>
+    <br />
+    <div class="editor-label">
+        @Html.Label("* Repita a Senha: ")
+    </div>
+    <div class="editor-field">
+        @Html.TextBoxFor(x => x.SenhaConfirm, new { @style = "width:252px;", @maxlength = "15", @id = "txtPassConfirm" })
+    </div>
+    <br />
+    <div class="editor-label">
+        @Html.Label("* Grupo: ")
+    </div>
+    <div class="editor-field">
+        @Html.DropDownListFor(x => x.IdGrupo, new SelectList(Model.ListaGrupos, "IdGrupo", "Nome"), "Selecione ...", new { @style = "width:257px;" })
+    </div>
+    <br />
+
+    <div id="botoesInferiores" align="right">
+        <table>
+            <tr>
+                <td>
+                    <a class="bt_blue" href="#" onclick="location.href='@Url.Action("Index", "Usuarios")'">
+                        <span class="bt_blue_lft"></span><strong>Voltar</strong> <span class="bt_blue_r">
+                        </span></a>
+                </td>
+                <td>
+                    <span>&nbsp</span>
+                </td>
+                <td>
+                    <a class="bt_blue" href="#" onclick="$('#frmEditUsuarios').submit();"><span class="bt_blue_lft">
+                    </span><strong>Salvar</strong> <span class="bt_blue_r"></span></a>
+                </td>
+            </tr>
+        </table>
+    </div>         
+}

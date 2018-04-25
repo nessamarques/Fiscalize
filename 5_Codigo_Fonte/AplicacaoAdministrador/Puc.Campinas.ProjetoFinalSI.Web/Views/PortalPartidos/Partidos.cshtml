@@ -1,0 +1,65 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.PartidoModel
+@{
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<script type="text/javascript">
+</script>
+
+<h3  style="background: none repeat scroll 0 0 #f09e2f;">Partidos políticos registrados no TSE</h3>
+
+A legislação eleitoral brasileira e a Constituição, promulgada em 1988, permitem a existência de várias agremiações políticas no Brasil.<br />
+<br />
+Veja abaixo a relação dos 32 partidos políticos registrados no TSE (Tribunal Superior Eleitoral) em funcionamento na atualidade: 
+<br />
+    <center>
+        <table style="margin:20px 10px 10px 10px;">
+            <tr style="color: white; background-color: #f09e2f; font-size: 15px; 
+                font-weight: 500; padding-left: 20px; line-height: 28px; border:1px solid gainsboro;">
+                <td style="width: 70px; text-align: center;">
+                    Sigla
+                </td>
+                <td style="width: 350px; text-align: center;">
+                    Nome
+                </td>
+                <td style="width: 50px; text-align: center;">
+                    Número
+                </td>
+                <td style="width: 150px; text-align: center;">
+                    Deferimento
+                </td>
+                <td style="width: 350px; text-align: center;">
+                    Presidente nacional
+                </td>
+                <td style="width: 80px; text-align: center;">
+                    Detalhar
+                </td>
+            </tr>
+        @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Partido item in @Model.ListaPartidos)
+        {
+            <tr style="border:1px solid gainsboro; font-size: 12px;">
+                <td style="width: 70px; text-align: center; padding-top:5px; ">
+                    @item.Sigla
+                </td>
+                <td style="width: 350px; text-align: left; padding-top:5px; ">
+                    @item.Nome
+                </td>
+                <td style="width: 50px; text-align: center; padding-top:5px; ">
+                    @item.NroPartido
+                </td>
+                <td style="width: 150px; text-align: center; padding-top:5px; ">
+                    @item.Deferimento.ToShortDateString()
+                </td>
+                <td style="width: 350px; text-align: left; padding-top:5px; ">
+                    @item.PresidenteNacional
+                </td>
+                <td style="width: 80px; text-align: center; padding-top:5px; ">
+                    <a href="@Url.Action("DetalhesPartido", "PortalPartidos", new { idPartido = item.IdPartido })">
+                        <img style="margin: 5px;" src="../../Content/portal/img/detail.png" alt="Detalhar partido" title="Detalhar partido" />
+                    </a>
+                </td>
+            </tr>
+        }
+        </table>
+    </center>
+<br />
+<div id="divObs" style="font-size:small;"><b>Obs: </b>Para ter acesso aos dados do diretório nacional da agremiação (endereço, telefone, fax, e-mail, site) clique no ícone <img style="margin: 5px;" src="../../Content/portal/img/detail.png" alt="Detalhar partido" title="Detalhar partido"/>.</div>

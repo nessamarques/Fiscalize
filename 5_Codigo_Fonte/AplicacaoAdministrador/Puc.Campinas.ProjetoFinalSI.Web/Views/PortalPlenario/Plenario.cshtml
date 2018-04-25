@@ -1,0 +1,211 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.PortalPlenarioModel
+@{
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<script type="text/javascript" src="../../Content/paging.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#pesquisaSessoes').hide();
+
+        $('#txtDataInicio').datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+            dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+            dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+            monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+            monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            nextText: '>>',
+            prevText: '<<'
+        });
+
+        $('#txtDataTermino').datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+            dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+            dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+            monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+            monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            nextText: '>>',
+            prevText: '<<'
+        });
+    });
+
+    function pesquisarSessoes() {
+        var isvalid = false;
+        var validationMessage = '';
+
+        if (
+          $('#txtPolitico').val() == '' &&
+         ($('#ddlSituacaoSessao').val() == '' || $('#ddlSituacaoSessao').val() == 'Selecione') &&
+          $('#txtDataInicio').val() == '' &&
+          $('#txtDataTermino').val() == ''
+          ) {
+            validationMessage = 'É necessário selecionar um filtro para efetuar a busca!';
+            $('#validation').html(validationMessage);
+            $('#validation').show('slow');
+        }
+        else {
+            isvalid = true;
+            $('#validation').hide();
+        }
+
+        if (isvalid) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/PortalPlenario/PesquisarSessoes")',
+                data: {
+                    nome: $('#txtPolitico').val(),
+                    situacao: $('#ddlSituacaoSessao').val(),
+                    inicio: $('#txtDataInicio').val(),
+                    termino: $('#txtDataTermino').val()
+                },
+                async: false,
+                cache: false,
+                success: function (data) {
+                    if (data != '' && data != '[object XMLDocument]') {
+
+                        $('#dinamicBody').html('');
+
+                        $('#dinamicBody').append(data);
+                        $('#pesquisaSessoes').show();
+                        $('#validation').html('');
+                        $('#validation').hide('slow');
+
+                        var pager = new Pager('tbSessoes', 10);
+                        pager.init();
+                        pager.showPageNav('pager', 'pageNav');
+                        pager.showPage(1);
+                    }
+                    else {
+                        var validationMessage = 'Nenhum registro encontrado com os filtros especificados!';
+                        $('#validation').html(validationMessage);
+                        $('#validation').show('slow');
+                        $('#pesquisaSessoes').hide();
+                    }
+                }
+            });
+        }
+    }
+</script>
+<style type="text/css">
+    .pg-ctrl
+    {
+        font: 16px verdana;
+        color: #b530ba;
+        text-decoration: none;
+        cursor: pointer;
+        padding: 4px;
+        margin: 0px;
+        border: 0px;
+    }
+    .pg-normal
+    {
+        padding: 2px 5px 2px 5px;
+        margin-right: 2px;
+        border: 1px solid #b530ba;
+        text-decoration: none;
+        color: #b530ba;
+        cursor: pointer;
+    }
+    
+    .pg-selected
+    {
+        padding: 2px 5px 2px 5px;
+        margin-right: 2px;
+        border: 1px solid #b530ba;
+        font-weight: bold;
+        background-color: #b530ba;
+        color: #FFF;
+        cursor: pointer;
+    }
+</style>
+<h3 style="background: none repeat scroll 0 0 #b530ba;">
+    Plenário - Sessões</h3>
+<form id="Form" action="#">
+<fieldset style="padding-left: 8px;" id="fdsPesquisaAvancada" class="coolfieldset">
+    <legend>&nbsp;Busca avançada&nbsp;</legend>
+    <div id="validation" style="color: Red; font-weight: bold;">
+    </div>
+    <fieldset style="padding: 8px; margin: 8px;" id="fdsOpcoesPesquisaNomeSessao" class="coolfieldset">
+        <legend>&nbsp;Pesquisa por nome:&nbsp;</legend>
+        <div>
+            * Nome:
+            @Html.TextBoxFor(x => x.NomeSessao, new { @id = "txtPolitico", @style = "width:63%; border:1px solid gainsboro; height:22px;" })
+        </div>
+    </fieldset>
+    <fieldset style="width: 910px; padding: 8px; margin: 8px;" id="fdsOpcoesPesquisaDadosSessao"
+        class="coolfieldset">
+        <legend>&nbsp;Pesquisa por dados da sessão:&nbsp;</legend>
+        <table>
+            <tr>
+                <td style="width: 150px;">
+                    Situação:
+                </td>
+                <td>
+                    @Html.DropDownListFor(x => x.IdSituacaoSessao, new SelectList(Model.ListaSituacaoSessao, "IdSituacaoSessao", "Nome"), "Selecione", new { @id = "ddlSituacaoSessao", @style = "width:345px;" })
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 150px;">
+                    Data inicial:
+                </td>
+                <td>
+                    @Html.TextBoxFor(x => x.DataInicio, new { @id = "txtDataInicio", @style = "width:30%; border:1px solid gainsboro; height:22px; margin-bottom: 6px; margin-left: 10px; padding-left:5px;" })
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 150px;">
+                    Data final:
+                </td>
+                <td>
+                    @Html.TextBoxFor(x => x.DateTermino, new { @id = "txtDataTermino", @style = "width:30%; border:1px solid gainsboro; height:22px; margin-bottom: 6px; margin-left: 10px; padding-left:5px;" })
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <button type="button" onclick="pesquisarSessoes();" style="float: right; height: 30px;
+        cursor: pointer; width: 70px; margin: 5px; border-radius: 4px; background-color: #b530ba;
+        color: white;">
+        Pesquisar
+    </button>
+</fieldset>
+</form>
+<div id="pesquisaSessoes" style="display: none;">
+    <table id="tbSessoes" style="margin-top: 20px; width: 955px;">
+        <thead>
+            <tr style="color: white; background-color: #b530ba; font-size: 15px; font-weight: 500;
+                padding-left: 20px; line-height: 28px; border: 1px solid gainsboro;">
+                <td style="width: 150px; text-align: center;">
+                    Nome
+                </td>
+                <td style="width: 650px; text-align: center;">
+                    Descrição
+                </td>
+                <td style="width: 100px; text-align: center;">
+                    Situação
+                </td>
+                <td style="width: 100px; text-align: center;">
+                    Início
+                </td>
+                <td style="width: 100px; text-align: center;">
+                    Término
+                </td>
+                <td style="width: 10px; text-align: center;">
+                </td>
+            </tr>
+        </thead>
+        <tbody id="dinamicBody">
+        </tbody>
+    </table>
+    <!-- div onde será criados os links da paginação -->
+    <div id="pageNav" class="pagination" style="width: 100%;">
+    </div>
+    <script type="text/javascript">
+        var pager = new Pager('tbSessoes', 10);
+        pager.init();
+        pager.showPageNav('pager', 'pageNav');
+        pager.showPage(1);
+    </script>
+</div>

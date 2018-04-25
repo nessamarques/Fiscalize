@@ -1,0 +1,101 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.SessaoModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+<h4>
+    <a class="migalha_pao_inicio" href="@Url.Action("Index", "Home")"> Painel de controle </a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt=""/> </a>
+    <a class="migalha_pao_meio" href="@Url.Action("Index", "Sessao")"> Manutenção de sessões </a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt=""/> </a>
+    <a class="migalha_pao_fim" href="#"> Incluir sessão </a>
+</h4>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#txtDtInicial').mask('99/99/9999');
+        $('#txtDtFinal').mask('99/99/9999');
+    });
+
+</script>
+@using (Html.BeginForm("Create", "Sessao", FormMethod.Post, new { id = "frmCreateSessao" }))
+{   
+    @Html.ValidationSummary(false);
+    @Html.Hidden("IdSessao", Model.IdSessao)    
+    
+    <div class="editor-label">
+        @Html.Label("* Nome: ")
+    </div>
+    <div class="editor-field">
+        @Html.TextBoxFor(x => x.Nome, new { @style = "width:100%; text-transform:uppercase;" })
+    </div>
+    <br />
+    <div class="editor-label">
+        @Html.Label("* Descrição: ")
+    </div>
+    <div class="editor-field">
+        @Html.TextAreaFor(x => x.Descricao, new { @style = "width:100%; height:80px;" })
+    </div>
+    <br />
+    <table>
+        <tr>
+            <td>
+                <div class="editor-label">
+                    @Html.Label("* Data Inicial: ")
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(x => x.DtInicial, new { @style = "width:118px;", @id = "txtDtInicial" })
+                </div>
+            </td>
+            <td>
+                <div class="editor-label">
+                    @Html.Label("* Data Final: ")
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(x => x.DtFinal, new { @style = "width:118px;", @id = "txtDtFinal" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div class="editor-label">
+        @Html.Label("* Situação: ")
+    </div>
+    <div class="editor-field">
+        @Html.DropDownListFor(x => x.IdSituacao, new SelectList(Model.ListaSituacaoSessao, "IdSituacaoSessao", "Nome"), "Selecione ...", new { @style = "width:150px;", @id = "ddlSituacao" })
+    </div>
+    <br />
+    <div class="editor-label">
+        @Html.Label("* Orador: ")
+    </div>
+    <div class="editor-field">
+        @Html.DropDownListFor(x => x.IdOrador, new SelectList(Model.ListaPolitico, "IdPolitico", "Nome"), "Selecione ...", new { @style = "width:350px;", @id = "ddlPartido" })
+    </div>
+    <br />
+    <div class="editor-label">
+        @Html.Label("* Pauta: ")
+    </div>
+    <div class="editor-field">
+        @Html.TextAreaFor(x => x.Pauta, new { @style = "width:100%; height:80px;" })
+    </div>
+    <br />
+    <div id="botoesInferiores" align="right">
+        <table>
+            <tr>
+                <td>
+                    <a class="bt_blue" href="#" onclick="location.href='@Url.Action("Index", "Sessao")'">
+                        <span class="bt_blue_lft"></span><strong>Voltar</strong> <span class="bt_blue_r">
+                        </span></a>
+                </td>
+                <td>
+                    <span>&nbsp</span>
+                </td>
+                <td>
+                    <a class="bt_blue" href="#" onclick="$('#frmCreateSessao').submit();"><span class="bt_blue_lft">
+                    </span><strong>Salvar</strong> <span class="bt_blue_r"></span></a>
+                </td>
+            </tr>
+        </table>
+    </div>         
+}

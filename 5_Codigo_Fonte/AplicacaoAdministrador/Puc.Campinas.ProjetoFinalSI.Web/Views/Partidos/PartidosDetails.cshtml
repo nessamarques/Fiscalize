@@ -1,0 +1,70 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.PartidoModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+<script type="text/javascript">
+
+    function verificaNumero(e) {
+        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            return false;
+        }
+    }
+
+    $(function ($) {
+        $("#txtDeferimento").mask("99/99/9999");
+        $("#NroPartido").keypress(verificaNumero);
+    });
+
+</script>
+<h4>
+    <a class="migalha_pao_inicio" href="@Url.Action("Index", "Home")"> Painel de controle </a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt="" /> </a>
+    <a class="migalha_pao_meio" href="@Url.Action("Index", "Partidos")"> Manutenção de partidos </a> 
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt="" /> </a>
+    <a class="migalha_pao_fim" href="#"> Detalhar partido</a>
+</h4>
+@using (Html.BeginForm("Details", "Partidos", FormMethod.Post))
+{   
+    @Html.ValidationSummary(false);
+    @Html.Hidden("IdPartido", Model.IdPartido)    
+    
+    <fieldset style="margin:10px 5px 10px 5px;">
+    <legend><b>Detalhar partido:</b></legend>
+
+        <table>
+            <tr>
+                <td>@Html.Label("* Sigla: ")</td>
+                <td>@Html.TextBoxFor(x => x.Sigla, new { @maxlength = "5", @style = "width:200px;", @class = "input_text", @disabled="disabled" })</td>
+                <td>@Html.Label("* Número: ")</td>
+                <td>@Html.TextBoxFor(x => x.NroPartido, new { @maxlength = "2", @style = "width:200px;", @class = "input_text", @disabled = "disabled" })</td>
+            </tr>
+            <tr>
+                <td>@Html.Label("* Nome: ")</td>
+                <td colspan="3">@Html.TextBoxFor(x => x.Nome, new { @maxlength = "100", @style = "width:476px; text-transform:uppercase;", @class = "input_text", @disabled = "disabled" })</td>
+            </tr>
+            <tr>
+                <td>@Html.Label("* Presidente: ")</td>
+                <td colspan="3">@Html.TextBoxFor(x => x.PresidenteNacional, new { @maxlength = "50", @style = "width:476px;", @class = "input_text", @disabled = "disabled" })</td>
+            </tr>
+            <tr>
+                <td>@Html.Label("* Deferimento: ")</td>
+                <td colspan="3">@Html.TextBoxFor(x => x.Deferimento, new { @id = "txtDeferimento", @style = "width:200px; text-transform:uppercase;", @class = "input_text", @disabled = "disabled" })</td>
+            </tr>
+        </table>
+    
+        <div id="botoesInferiores" align="right">
+        <br />
+            <table>
+                <tr>
+                    <td>
+                        <a class="bt_blue" href="#" onclick="location.href='@Url.Action("Index", "Partidos")'">
+                            <span class="bt_blue_lft"></span><strong>Voltar</strong> <span class="bt_blue_r">
+                            </span></a>
+                    </td>
+                </tr>
+            </table>
+        </div>         
+    </fieldset>
+}

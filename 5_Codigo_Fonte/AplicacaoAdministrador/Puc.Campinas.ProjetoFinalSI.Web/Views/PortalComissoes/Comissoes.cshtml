@@ -1,0 +1,62 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.ComissaoModel
+@{
+    Layout = "~/Views/Shared/_LayoutPortal.cshtml";
+}
+<script type="text/javascript">
+</script>
+<h3 style="background: none repeat scroll 0 0 #30b6c9;">
+    Comissões</h3>
+São órgãos técnicos criados pelo Regimento Interno da Casa e constituídos de deputados(as),
+com a finalidade de discutir e votar as propostas de leis que são apresentadas à
+Câmara. Com relação a determinadas proposições ou projetos, essas Comissões se manifestam
+emitindo opinião técnica sobre o assunto, por meio de pareceres, antes de o assunto
+ser levado ao Plenário; com relação a outras proposições elas decidem, aprovando-as
+ou rejeitando-as, sem a necessidade de passarem elas pelo Plenário da Casa.
+<br />
+<br />
+A composição parlamentar desses órgãos técnicos é renovada a cada ano ou sessão
+legislativa. Na ação fiscalizadora, as Comissões atuam como mecanismos de controle
+dos programas e projetos executados ou em execução, a cargo do Poder Executivo.
+Essas Comissões perduram enquanto constarem do Regimento Interno.
+<br />
+<br />
+As atuais Comissões Permanentes da Câmara dos Deputados são:
+<br />
+<center>
+    <table style="margin: 20px 10px 10px 10px;">
+        <tr style="color: white; background-color: #30b6c9; font-size: 15px; font-weight: 500;
+            padding-left: 20px; line-height: 28px; border: 1px solid gainsboro;">
+            <td style="width: 800px; text-align: center;">
+                Nome
+            </td>
+            <td style="width: 100px; text-align: center;">
+                Sigla
+            </td>
+            <td style="width: 80px; text-align: center;">
+                Membros
+            </td>
+        </tr>
+        @foreach (Puc.Campinas.ProjetoFinalSI.Entidade.Comissao item in @Model.ListaComissao)
+        {
+            <tr style="border: 1px solid gainsboro; font-size: 12px;">
+                <td style="width: 800px; text-align: left; padding-top: 5px; padding-left: 5px;">
+                    @item.Nome
+                </td>
+                <td style="width: 100px; text-align: center; padding-top: 5px; padding-left: 5px;">
+                    @item.Sigla
+                </td>
+                <td style="width: 80px; text-align: center;">
+                    <a href="@Url.Action("MembrosComissao", "PortalComissoes", new { idComissao = item.IdComissao })">
+                        <img style="margin: 5px;" src="../../Content/portal/img/users.png" alt="Membros da comissão"
+                            title="Membros da comissão" />
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+</center>
+<br />
+<div id="divObs" style="font-size: small;">
+    <b>Obs: </b>Para visualizar os membros das comissões clique no ícone
+    <img style="margin: 5px;" src="../../Content/portal/img/users.png" alt="Membros comissões"
+        title="Membros comissões" />.</div>

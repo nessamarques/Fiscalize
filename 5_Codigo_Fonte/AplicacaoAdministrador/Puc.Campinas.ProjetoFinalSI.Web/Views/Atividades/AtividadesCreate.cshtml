@@ -1,0 +1,71 @@
+﻿@model Puc.Campinas.ProjetoFinalSI.Web.Models.AtividadeModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    $(function ($) {
+
+        $("#DtInicio").mask("99/99/9999");
+        $("#DtFim").mask("99/99/9999");
+    });
+
+</script>
+<h4>
+    <a class="migalha_pao_inicio" href="@Url.Action("Index", "Home")"> Painel de controle </a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt=""/> </a>
+    <a class="migalha_pao_meio" href="@Url.Action("Index", "Atividades")"> Manutenção de atividades </a>
+    <a class="migalha_pao_proximo" href="#"> <img src="../../Content/img/arrow_right2.png" alt="" /> </a>
+    <a class="migalha_pao_fim" href="#"> Incluir atividade </a>
+</h4>
+@using (Html.BeginForm("Create", "Atividades", FormMethod.Post, new { id = "frmCreateAtividades" }))
+{   
+    @Html.ValidationSummary(false);
+    @Html.Hidden("IdAtividade", Model.IdAtividade)    
+    @Html.Hidden("IdPolitico", Model.IdPolitico)
+    
+    <fieldset style="margin:10px 5px 10px 5px;">
+    <legend><b>Incluir atividade:</b></legend>
+
+        <table>
+            <tr>
+                <td>@Html.Label("* Nome da comissão: ")</td>
+                <td>@Html.TextBoxFor(x => x.NomeComissao, new { @maxlength = "100", @style = "width:450px; text-transform:uppercase;", @class = "input_text" })</td>
+            </tr>
+            <tr>
+                <td>@Html.Label("* Situação: ")</td>
+                <td>@Html.DropDownListFor(x => x.IdSituacao, new SelectList(Model.ListaSituacoes, "IdSituacao", "Nome"), "Selecione ...", new { @style = "width:200px;", @class = "select" })</td>
+            </tr>
+            <tr>
+                <td>@Html.Label("* Data inicial: ")</td>
+                <td>@Html.TextBoxFor(x => x.DtInicio, new { @maxlength = "50", @style = "width:100px; text-transform:uppercase;", @class = "input_text" })</td>
+            </tr>
+            <tr>
+                <td>@Html.Label("* Data final: ")</td>
+                <td>@Html.TextBoxFor(x => x.DtFim, new { @maxlength = "50", @style = "width:100px; text-transform:uppercase;", @class = "input_text" })</td>
+            </tr>
+        </table>
+    
+        <div id="botoesInferiores" align="right">
+            <table>
+                <tr>
+                    <td>
+                        <a class="bt_blue" href="#" onclick="location.href='@Url.Action("Index", "Atividades")'">
+                            <span class="bt_blue_lft"></span><strong>Voltar</strong> <span class="bt_blue_r">
+                        </span></a>
+                    </td>
+                    <td>
+                        <span>&nbsp &nbsp</span>
+                    </td>
+                    <td>
+                        <a class="bt_blue" href="#" onclick="$('#frmCreateAtividades').submit();"><span class="bt_blue_lft">
+                        </span><strong>Salvar</strong> <span class="bt_blue_r"></span></a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </fieldset> 
+}
